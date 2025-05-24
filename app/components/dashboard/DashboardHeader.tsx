@@ -12,7 +12,11 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({unreadNotification}) =
         <View style={{ paddingHorizontal: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 50, backgroundColor: '#fff'}}>
             <Image style={{ height: 37, width: 98 }} source={require("../../../assets/images/common/logo.png")} />
             <View style={{ flexDirection: 'row', backgroundColor: '#fff' }}>
-                <TouchableOpacity style={{ marginRight: 18 }}>
+                <TouchableOpacity 
+                    onPress={() => {
+                        navigation.navigate("Notification")
+                    }}
+                    style={{ marginRight: 18 }}>
                     <Image style={{ height: 30, width: 30 }} source={require("../../../assets/images/image/heart-icon.png")} />
                 </TouchableOpacity>
                 <TouchableOpacity 

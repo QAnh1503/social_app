@@ -10,6 +10,7 @@ import Search from "../../screen/dashboard/search/Search";
 import Reel from "../../screen/dashboard/Reel";
 import Reels from "../../screen/dashboard/reels/Reels";
 import CommunityGroups from "../../screen/community/CommunityGroups";
+import ChatBot from "../../screen/chatbot/ChatBot";
 
 const Tab = createBottomTabNavigator()
 
@@ -124,6 +125,23 @@ const BottomNavigation = () => {
                     )
                 }} 
             />
+            {/* <Tab.Screen
+                name="ChatBot"
+                component={ChatBot}
+                options={{
+                    tabBarIcon: ({ focused }) => (
+                        <Image
+                            style={{ height: 27, width: 28 }}
+                            source={
+                                focused
+                                    ? require('../../../assets/images/image/profileIconFocus.png')
+                                    : require('../../../assets/images/image/profileIconOutline.png')
+                            }
+                        />
+
+                    )
+                }} 
+            /> */}
         </Tab.Navigator>
     )
 }

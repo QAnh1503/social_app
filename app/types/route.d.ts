@@ -36,7 +36,7 @@ type RootStackParamList = {
     UserProfileSearch: { user: User }; 
 
     // Community
-    CommunityGroupDetails: undefined;
+    CommunityGroupDetails: {item: any};
     CommunityFood: undefined;
     CommunityDrink: undefined;
     CommunityRecipe: undefined;
@@ -45,6 +45,8 @@ type RootStackParamList = {
     CommunityJogging: undefined;
     CommunityMedicine: undefined;
     Answer: {item: any};
+
+    Notification: undefined;
 };
 
 

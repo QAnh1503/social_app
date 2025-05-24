@@ -1,5 +1,5 @@
 import {
-    FlatList,
+  FlatList,
   Image,
   SafeAreaView,
   ScrollView,
@@ -15,8 +15,6 @@ import { addQues, getAllQuesWithTags, getOneUserById } from "../../nestjs/api";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { formatDistanceToNow } from "date-fns";
 
-
-
 interface QuestionWithUser {
   idQues: number;
   question: string;
@@ -28,92 +26,91 @@ interface QuestionWithUser {
 }
 
 function CommunityGroupDetails() {
-    const navigation: NavigationProp<RootStackParamList> = useNavigation();
-    
+  const navigation: NavigationProp<RootStackParamList> = useNavigation();
+
   const { email, idUser, avatar, name } = useUser();
-//   console.log("User email in UserProfile:", email);
-//   console.log("User ID in UserProfile:", idUser);
-//   console.log("User email in UserProfile:", avatar);
-//   console.log("User ID in UserProfile:", name);
+  console.log("User email in UserProfile:", email);
+  console.log("User ID in UserProfile:", idUser);
+  console.log("User email in UserProfile:", avatar);
+  console.log("User ID in UserProfile:", name);
   console.log("Community Groups DETAILS");
 
-    const [questionsWithUser, setQuestionsWithUser] =useState<QuestionWithUser[]>([]);
+  console.log("Community Groups DETAILS");
 
-//   useEffect(() => {
-//     // Gọi API để lấy các câu hỏi có tag là "Food"
-//     const fetchQuestions = async () => {
-//       try {
-//         const res = await getAllQuesWithTags({ tags: "Food" });
-//         console.log("Questions with tag 'Food':", res.data);
-//       } catch (error) {
-//         console.error("Error fetching questions with tag 'Food':", error);
-//       }
-//     };
+  const [questionsWithUser, setQuestionsWithUser] = useState<
+    QuestionWithUser[]
+  >([]);
+  // const [quesWithUserDrink, setQuesWithUserDrink] = useState<
+  //   QuestionWithUser[]
+  // >([]);
+  // const [quesWithUserRecipe, setQuesWithUserRecipe] = useState<
+  //   QuestionWithUser[]
+  // >([]);
+  // const [quesWithUserYoga, setQuesWithUserYoga] = useState<QuestionWithUser[]>(
+  //   []
+  // );
+  // const [quesWithUserGym, setQuesWithUserGym] = useState<QuestionWithUser[]>(
+  //   []
+  // );
+  // const [quesWithUserJogging, setQuesWithUserJogging] = useState<
+  //   QuestionWithUser[]
+  // >([]);
 
-//     fetchQuestions();
-//   }, []);
-    
-  // useEffect(() => {
-    const fetchQuestionsWithUser = async () => {
-      try {
-        const res = await getAllQuesWithTags({ tags: "Food" });
-        const questions = res.data;
+  const fetchQuestionsWithUser = async () => {
+    try {
+      const res = await getAllQuesWithTags({ tags: "Food" });
+      const questions = res.data;
 
-        // Map qua từng question để lấy thêm thông tin user
-        const enrichedQuestions = await Promise.all(
-          questions.map(async (q: any) => {
-            try {
-              const userRes = await getOneUserById({ idUser: q.idUser });
-              const user = userRes.data;
-              return {
-                ...q,
-                created_at: formatDistanceToNow(new Date(q.created_at), { addSuffix: true }),
-                userName: user.name,
-                avatar: user.avatar
-              };
-            } catch (err) {
-              console.error("Lỗi khi lấy user:", err);
-              return {
-                ...q,
-                userName: "Unknown",
-                avatar: null
-              };
-            }
-          })
-        );
+      const enrichedQuestions = await Promise.all(
+        questions.map(async (q: any) => {
+          try {
+            const userRes = await getOneUserById({ idUser: q.idUser });
+            const user = userRes.data;
+            return {
+              ...q,
+              created_at: formatDistanceToNow(new Date(q.created_at), {
+                addSuffix: true,
+              }),
+              userName: user.name,
+              avatar: user.avatar,
+            };
+          } catch (err) {
+            console.error("Lỗi khi lấy user:", err);
+            return {
+              ...q,
+              userName: "Unknown",
+              avatar: null,
+            };
+          }
+        })
+      );
 
-        setQuestionsWithUser(enrichedQuestions);
-        //console.log("Question w/ user:", enrichedQuestions);
-      } catch (error) {
-        console.error("Lỗi khi lấy câu hỏi có tag Food:", error);
-      }
-    };
+      setQuestionsWithUser(enrichedQuestions);
+      //console.log("Question w/ user:", enrichedQuestions);
+    } catch (error) {
+      console.error("Lỗi khi lấy câu hỏi có tag Food:", error);
+    }
+  };
 
-    //fetchQuestionsWithUser();
- // }
-//   , []
-// );
   useEffect(() => {
     fetchQuestionsWithUser();
   }, []);
 
-  const [comment, setComment] = useState('')
-      const upLoatCmt = async () => {
-          try {
-              const res = await addQues({ 
-                  question: comment,
-                  idUser: idUser,
-                  tags: "Food"
-              });
-                  console.log("ADD QUESTION SUCCESSFULLY !")
-                  setComment('')
-                  await fetchQuestionsWithUser(); 
-                  
-              } catch (err) {
-              console.error("Error when upload ques:", err);
-          }
-      };
-
+  const [comment, setComment] = useState("");
+  const upLoatCmt = async () => {
+    try {
+      const res = await addQues({
+        question: comment,
+        idUser: idUser,
+        tags: "Food",
+      });
+      console.log("ADD QUESTION SUCCESSFULLY !");
+      setComment("");
+      await fetchQuestionsWithUser();
+    } catch (err) {
+      console.error("Error when upload ques:", err);
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -122,7 +119,6 @@ function CommunityGroupDetails() {
           style={{ width: "100%", height: 230, position: "absolute" }}
           // source={require("../../../assets/images/image/avatar.png")}
           source={require("../../../assets/images/image/community/foodBigImg.png")}
-
         />
         <Image
           style={{
@@ -205,66 +201,134 @@ function CommunityGroupDetails() {
             </TouchableOpacity>
           </View>
         </View>
-        
-        <View style= {{borderBottomWidth: 1, marginHorizontal: 17, marginTop: 10, borderColor: "#ccc"}}></View>
-        <View style= {{paddingHorizontal: 18}}>
-            <Text style= {{fontSize: 18,fontFamily: "serif",marginTop: 10, }}
-            >
-                What's on your mind?
-            </Text>
-            {/* <FlatList
+
+        <View
+          style={{
+            borderBottomWidth: 1,
+            marginHorizontal: 17,
+            marginTop: 10,
+            borderColor: "#ccc",
+          }}
+        ></View>
+        <View style={{ paddingHorizontal: 18 }}>
+          <Text style={{ fontSize: 18, fontFamily: "serif", marginTop: 10 }}>
+            What's on your mind?
+          </Text>
+          {/* <FlatList
                 nestedScrollEnabled={true}
                 data={questionsWithUser}
                 keyExtractor={(item) => item.idQues.toString()}
                 renderItem={({ item }) => ( */}
-            {questionsWithUser.map((item) => (
-                    <View key={item.idQues} style= {{flexDirection: "row", marginTop: 40}}>
-                        <Image
-                            style={{
-                                width: 40,
-                                height: 40,
-                                borderRadius: 50,
-                              
-                            }}
-                            source={
-                                item.avatar
-                              ? { uri: item.avatar }
-                              : require("../../../assets/images/image/avatar.png")
-                            }
-                        />
-                        <View style= {{paddingLeft: 10,flex: 1, position: "relative", paddingBottom: 22}}>
-                            <View style= {{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
-                              <Text style= {{ fontSize: 16, fontWeight: "800", fontFamily: "serif"}}>{item.userName}</Text>
-                              <View style= {{flexDirection: "row", alignItems: "center", marginRight: 7,}}>
-                                <Image
-                                    style={{
-                                    width: 15,
-                                    height: 15,
-                                    }}
-                                    source={require("../../../assets/images/image/community/clock.png")}
-                                />
-                                <Text style= {{color: "#666",  fontSize: 12, marginLeft: 8}}>{item.created_at}</Text>
-                              </View>
-                            </View>
-                          
-                            <View style= {{marginTop:10 ,backgroundColor: "#ffe4e1", borderRadius: 10, height: 70, alignItems: "center", justifyContent: "center", paddingHorizontal: 20}}>
-                                <Text style= {{fontFamily: "serif", fontSize: 15, color: "#f08080"}}>{item.question}</Text>
-                            </View>
-                            <TouchableOpacity 
-                                onPress={() => {
-                                    navigation.navigate("Answer", {item})
-                                }}
-                                style= {{ 
-                                  position: "absolute", 
-                                  left: 15, 
-                                  // right:0,
-                                  bottom: 0,  
-                                }}>
-                                <Text style= {{fontFamily: "serif", borderBottomWidth: 1, borderColor: "#ccc", fontSize: 13, color: "#696969"}}>See the answer</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-            ))}
+          {questionsWithUser.map((item) => (
+            <View
+              key={item.idQues}
+              style={{ flexDirection: "row", marginTop: 40 }}
+            >
+              <Image
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 50,
+                }}
+                source={
+                  item.avatar
+                    ? { uri: item.avatar }
+                    : require("../../../assets/images/image/avatar.png")
+                }
+              />
+              <View
+                style={{
+                  paddingLeft: 10,
+                  flex: 1,
+                  position: "relative",
+                  paddingBottom: 22,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: "800",
+                      fontFamily: "serif",
+                    }}
+                  >
+                    {item.userName}
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginRight: 7,
+                    }}
+                  >
+                    <Image
+                      style={{
+                        width: 15,
+                        height: 15,
+                      }}
+                      source={require("../../../assets/images/image/community/clock.png")}
+                    />
+                    <Text
+                      style={{ color: "#666", fontSize: 12, marginLeft: 8 }}
+                    >
+                      {item.created_at}
+                    </Text>
+                  </View>
+                </View>
+
+                <View
+                  style={{
+                    marginTop: 10,
+                    backgroundColor: "#ffe4e1",
+                    borderRadius: 10,
+                    height: 70,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingHorizontal: 20,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontFamily: "serif",
+                      fontSize: 15,
+                      color: "#f08080",
+                    }}
+                  >
+                    {item.question}
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("Answer", { item });
+                  }}
+                  style={{
+                    position: "absolute",
+                    left: 15,
+                    // right:0,
+                    bottom: 0,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontFamily: "serif",
+                      borderBottomWidth: 1,
+                      borderColor: "#ccc",
+                      fontSize: 13,
+                      color: "#696969",
+                    }}
+                  >
+                    See the answer
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
         </View>
       </View>
     </ScrollView>

@@ -3,7 +3,7 @@ import { Image, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity } from "r
 import { View, Platform, Text } from "react-native";
 import { useUser } from "../UserContext";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { getAllPost } from "../../nestjs/api";
+import { getAllPost, getAllQues } from "../../nestjs/api";
 import { useEffect, useState } from "react";
 
 const styles = StyleSheet.create({
@@ -139,11 +139,94 @@ function CommunityGroups() {
     const [numPostMedicine, setNumPostMedicine] = useState(0);
     const [numMemsMedicine, setNumMemsMedicine] = useState(0);
 
+    // useEffect(() => {
+    //         const fetchPosts = async () => {
+    //             try {
+    //                 const response = await getAllPost();
+    //                 const posts = response.data;
+                    
+    //                 let countFood = 0;
+    //                 let countDrink = 0;
+    //                 let countRecipe = 0;
+    //                 let countYoga = 0;
+    //                 let countGym = 0;
+    //                 let countJogging = 0;
+    //                 let countMedicine = 0;
+
+    //                 let memFood = new Set();
+    //                 let memDrink = new Set();
+    //                 let memRecipe = new Set();
+    //                 let memYoga = new Set();
+    //                 let memGym = new Set();
+    //                 let memJogging = new Set();
+    //                 let memMedicine = new Set();
+
+    //                 posts.forEach((post :{ idUser: number; tags: string }) => {
+    //                     const userId = post.idUser;
+    //                     switch (post.tags) {
+    //                         case 'Food':
+    //                             countFood++;
+    //                             memFood.add(userId);
+    //                             break;
+    //                         case 'Drink':
+    //                             memDrink.add(userId);
+    //                             countDrink++;
+    //                             break;
+    //                         case 'Recipe':
+    //                             memRecipe.add(userId);
+    //                             countRecipe++;
+    //                             break;
+    //                         case 'Yoga':
+    //                             countYoga++;
+    //                             memYoga.add(userId);
+    //                             break;
+    //                         case 'Gym':
+    //                             countGym++;
+    //                             memGym.add(userId);
+    //                             break;
+    //                         case 'Jogging':
+    //                             countJogging++;
+    //                             memJogging.add(userId);
+    //                             break;
+    //                         case 'Medicine':
+    //                             countMedicine++;
+    //                             memMedicine.add(userId);
+    //                             break;
+    //                         default:
+    //                             break;
+    //                     }
+    //                 });
+
+    //                 setNumPostFood(countFood);
+    //                 setNumPostDrink(countDrink);
+    //                 setNumPostRecipe(countRecipe);
+    //                 setNumPostYoga(countYoga);
+    //                 setNumPostGym(countGym);
+    //                 setNumPostJogging(countJogging);
+    //                 setNumPostMedicine(countMedicine);
+
+    //                 setNumMemsFood(memFood.size);
+    //                 setNumMemsDrink(memDrink.size);
+    //                 setNumMemsRecipe(memRecipe.size);
+    //                 setNumMemsYoga(memYoga.size);
+    //                 setNumMemsGym(memGym.size);
+    //                 setNumMemsJogging(memJogging.size);
+    //                 setNumMemsMedicine(memMedicine.size);
+
+    //                 //console.log("Fetched posts:", response.data);
+    //             } catch (error) {
+    //                 console.error("Failed to fetch posts:", error);
+    //             }
+    //         };
+    
+    //         fetchPosts();
+    //     }, []);
+
     useEffect(() => {
-            const fetchPosts = async () => {
+            const fetchQues = async () => {
                 try {
-                    const response = await getAllPost();
-                    const posts = response.data;
+                    const response = await getAllQues();
+                    const quess = response.data;
                     
                     let countFood = 0;
                     let countDrink = 0;
@@ -161,9 +244,9 @@ function CommunityGroups() {
                     let memJogging = new Set();
                     let memMedicine = new Set();
 
-                    posts.forEach((post :{ idUser: number; tags: string }) => {
-                        const userId = post.idUser;
-                        switch (post.tags) {
+                    quess.forEach((ques :{ idUser: number; tags: string }) => {
+                        const userId = ques.idUser;
+                        switch (ques.tags) {
                             case 'Food':
                                 countFood++;
                                 memFood.add(userId);
@@ -219,178 +302,210 @@ function CommunityGroups() {
                 }
             };
     
-            fetchPosts();
+            fetchQues();
         }, []);
-
 
     return (
         <ScrollView style={styles.container}>
-        <Text style={styles.title}>Community Groups</Text>
-        <View style={styles.viewEachGroup}>
-            <Image
-            style={styles.imgEachGroup}
-            source={require("../../../assets/images/image/community/foodAvt.png")}
-            />
-            <View style={{ marginLeft: 15, marginTop: 10 }}>
-            <Text style={styles.titleEachGroup}>Food</Text>
-            <Text style={styles.numPostsCommunity}>{numPostFood} posts</Text>
-            <TouchableOpacity
-                onPress={() => {
-                    navigation.navigate("CommunityFood")
-                }}
-            >
-                <Text style={styles.joinBtn}>Join</Text>
-            </TouchableOpacity>
+            <Text style={styles.title}>Community Groups</Text>
+
+            {/* ====== FOOD ====== */}
+            <View style={styles.viewEachGroup}>
+                <Image
+                style={styles.imgEachGroup}
+                source={require("../../../assets/images/image/community/foodAvt.png")}
+                />
+                <View style={{ marginLeft: 15, marginTop: 10 }}>
+                <Text style={styles.titleEachGroup}>Food</Text>
+                <Text style={styles.numPostsCommunity}>{numPostFood} posts</Text>
+                <TouchableOpacity
+                    onPress={() => {
+                        navigation.navigate("CommunityGroupDetails", {item: "Food"})
+                    }}
+                >
+                    <Text style={styles.joinBtn}>Join</Text>
+                </TouchableOpacity>
+                </View>
+
+                <View style={styles.viewContentMembers}>
+                <Image
+                    style={styles.numMembers}
+                    source={require("../../../assets/images/image/community/members.png")}
+                />
+                <Text style={{ color: "#333", fontFamily: "serif", marginLeft: 3 }}>
+                    {numMemsFood} members
+                </Text>
+                </View>
             </View>
 
-            <View style={styles.viewContentMembers}>
-            <Image
-                style={styles.numMembers}
-                source={require("../../../assets/images/image/community/members.png")}
-            />
-            <Text style={{ color: "#333", fontFamily: "serif", marginLeft: 3 }}>
-                {numMemsFood} members
-            </Text>
-            </View>
-        </View>
-        <View style={styles.viewEachGroup}>
-            <Image
-            style={styles.imgEachGroup}
-            source={require("../../../assets/images/image/community/drinkAvt.png")}
-            />
-            <View style={{ marginLeft: 15, marginTop: 10 }}>
-            <Text style={styles.titleEachGroup}>Drink</Text>
-            <Text style={styles.numPostsCommunity}>{numPostDrink} posts</Text>
-            <TouchableOpacity>
-                <Text style={styles.joinBtn}>Join</Text>
-            </TouchableOpacity>
-            </View>
+            {/* ====== DRINK ====== */}
+            <View style={styles.viewEachGroup}>
+                <Image
+                style={styles.imgEachGroup}
+                source={require("../../../assets/images/image/community/drinkAvt.png")}
+                />
+                <View style={{ marginLeft: 15, marginTop: 10 }}>
+                <Text style={styles.titleEachGroup}>Drink</Text>
+                <Text style={styles.numPostsCommunity}>{numPostDrink} posts</Text>
+                <TouchableOpacity
+                    onPress={() => {
+                        navigation.navigate("CommunityGroupDetails", {item: "Drink"})
+                    }}
+                >
+                    <Text style={styles.joinBtn}>Join</Text>
+                </TouchableOpacity>
+                </View>
 
-            <View style={styles.viewContentText}>
-            <Image
-                style={styles.numMembers}
-                source={require("../../../assets/images/image/community/members.png")}
-            />
-            <Text style={{ color: "#333", fontFamily: "serif", marginLeft: 3 }}>
-                {numMemsDrink} members
-            </Text>
+                <View style={styles.viewContentText}>
+                <Image
+                    style={styles.numMembers}
+                    source={require("../../../assets/images/image/community/members.png")}
+                />
+                <Text style={{ color: "#333", fontFamily: "serif", marginLeft: 3 }}>
+                    {numMemsDrink} members
+                </Text>
+                </View>
             </View>
-        </View>
-        <View style={styles.viewEachGroup}>
-            <Image
-            style={styles.imgEachGroup}
-            source={require("../../../assets/images/image/community/recipeAvt.png")}
-            />
-            <View style={{ marginLeft: 15, marginTop: 10 }}>
-            <Text style={styles.titleEachGroup}>Recipe</Text>
-            <Text style={styles.numPostsCommunity}>{numPostRecipe} posts</Text>
-            <TouchableOpacity>
-                <Text style={styles.joinBtn}>Join</Text>
-            </TouchableOpacity>
-            </View>
+            {/* ====== RECIPE ====== */}
+            <View style={styles.viewEachGroup}>
+                <Image
+                style={styles.imgEachGroup}
+                source={require("../../../assets/images/image/community/recipeAvt.png")}
+                />
+                <View style={{ marginLeft: 15, marginTop: 10 }}>
+                <Text style={styles.titleEachGroup}>Recipe</Text>
+                <Text style={styles.numPostsCommunity}>{numPostRecipe} posts</Text>
+                <TouchableOpacity
+                    onPress={() => {
+                        navigation.navigate("CommunityGroupDetails", {item: "Recipe"})
+                    }}
+                >
+                    <Text style={styles.joinBtn}>Join</Text>
+                </TouchableOpacity>
+                </View>
 
-            <View style={styles.viewContentText}>
-            <Image
-                style={styles.numMembers}
-                source={require("../../../assets/images/image/community/members.png")}
-            />
-            <Text style={{ color: "#333", fontFamily: "serif", marginLeft: 3 }}>
-                {numMemsRecipe} members
-            </Text>
+                <View style={styles.viewContentText}>
+                <Image
+                    style={styles.numMembers}
+                    source={require("../../../assets/images/image/community/members.png")}
+                />
+                <Text style={{ color: "#333", fontFamily: "serif", marginLeft: 3 }}>
+                    {numMemsRecipe} members
+                </Text>
+                </View>
             </View>
-        </View>
-        <View style={styles.viewEachGroup}>
-            <Image
-            style={styles.imgEachGroup}
-            source={require("../../../assets/images/image/community/yogaAvt.png")}
-            />
-            <View style={{ marginLeft: 15, marginTop: 10 }}>
-            <Text style={styles.titleEachGroup}>Yoga</Text>
-            <Text style={styles.numPostsCommunity}>{numPostYoga} posts</Text>
-            <TouchableOpacity>
-                <Text style={styles.joinBtn}>Join</Text>
-            </TouchableOpacity>
-            </View>
+            {/* ====== YOGA ====== */}
+            <View style={styles.viewEachGroup}>
+                <Image
+                style={styles.imgEachGroup}
+                source={require("../../../assets/images/image/community/yogaAvt.png")}
+                />
+                <View style={{ marginLeft: 15, marginTop: 10 }}>
+                <Text style={styles.titleEachGroup}>Yoga</Text>
+                <Text style={styles.numPostsCommunity}>{numPostYoga} posts</Text>
+                <TouchableOpacity
+                    onPress={() => {
+                        navigation.navigate("CommunityGroupDetails", {item: "Yoga"})
+                    }}
+                >
+                    <Text style={styles.joinBtn}>Join</Text>
+                </TouchableOpacity>
+                </View>
 
-            <View style={styles.viewContentText}>
-            <Image
-                style={styles.numMembers}
-                source={require("../../../assets/images/image/community/members.png")}
-            />
-            <Text style={{ color: "#333", fontFamily: "serif", marginLeft: 3 }}>
-                {numMemsYoga} members
-            </Text>
+                <View style={styles.viewContentText}>
+                <Image
+                    style={styles.numMembers}
+                    source={require("../../../assets/images/image/community/members.png")}
+                />
+                <Text style={{ color: "#333", fontFamily: "serif", marginLeft: 3 }}>
+                    {numMemsYoga} members
+                </Text>
+                </View>
             </View>
-        </View>
-        <View style={styles.viewEachGroup}>
-            <Image
-            style={styles.imgEachGroup}
-            source={require("../../../assets/images/image/community/gymAvt.png")}
-            />
-            <View style={{ marginLeft: 15, marginTop: 10 }}>
-            <Text style={styles.titleEachGroup}>Gym</Text>
-            <Text style={styles.numPostsCommunity}>{numPostGym} posts</Text>
-            <TouchableOpacity>
-            <Text style={styles.joinBtn}>Join</Text>
-            </TouchableOpacity>
-            </View>
+            {/* ====== GYM ====== */}
+            <View style={styles.viewEachGroup}>
+                <Image
+                style={styles.imgEachGroup}
+                source={require("../../../assets/images/image/community/gymAvt.png")}
+                />
+                <View style={{ marginLeft: 15, marginTop: 10 }}>
+                <Text style={styles.titleEachGroup}>Gym</Text>
+                <Text style={styles.numPostsCommunity}>{numPostGym} posts</Text>
+                <TouchableOpacity
+                    onPress={() => {
+                        navigation.navigate("CommunityGroupDetails", {item: "Gym"})
+                    }}
+                >
+                    <Text style={styles.joinBtn}>Join</Text>
+                </TouchableOpacity>
+                </View>
 
-            <View style={styles.viewContentText}>
-            <Image
-                style={styles.numMembers}
-                source={require("../../../assets/images/image/community/members.png")}
-            />
-            <Text style={{ color: "#333", fontFamily: "serif", marginLeft: 3 }}>
-                {numMemsGym} members
-            </Text>
+                <View style={styles.viewContentText}>
+                <Image
+                    style={styles.numMembers}
+                    source={require("../../../assets/images/image/community/members.png")}
+                />
+                <Text style={{ color: "#333", fontFamily: "serif", marginLeft: 3 }}>
+                    {numMemsGym} members
+                </Text>
+                </View>
             </View>
-        </View>
-        <View style={styles.viewEachGroup}>
-            <Image
-            style={styles.imgEachGroup}
-            source={require("../../../assets/images/image/community/joggingAvt.png")}
-            />
-            <View style={{ marginLeft: 15, marginTop: 10 }}>
-            <Text style={styles.titleEachGroup}>Jogging</Text>
-            <Text style={styles.numPostsCommunity}>{numPostJogging} posts</Text>
-            <TouchableOpacity>
-            <Text style={styles.joinBtn}>Join</Text>
-            </TouchableOpacity>
-            </View>
+            {/* ====== JOGGING ====== */}
+            <View style={styles.viewEachGroup}>
+                <Image
+                style={styles.imgEachGroup}
+                source={require("../../../assets/images/image/community/joggingAvt.png")}
+                />
+                <View style={{ marginLeft: 15, marginTop: 10 }}>
+                <Text style={styles.titleEachGroup}>Jogging</Text>
+                <Text style={styles.numPostsCommunity}>{numPostJogging} posts</Text>
+                <TouchableOpacity
+                    onPress={() => {
+                        navigation.navigate("CommunityGroupDetails", {item: "Jogging"})
+                    }}
+                >
+                    <Text style={styles.joinBtn}>Join</Text>
+                </TouchableOpacity>
+                </View>
 
-            <View style={styles.viewContentText}>
-            <Image
-                style={styles.numMembers}
-                source={require("../../../assets/images/image/community/members.png")}
-            />
-            <Text style={{ color: "#333", fontFamily: "serif", marginLeft: 3 }}>
-                {numMemsJogging} members
-            </Text>
+                <View style={styles.viewContentText}>
+                <Image
+                    style={styles.numMembers}
+                    source={require("../../../assets/images/image/community/members.png")}
+                />
+                <Text style={{ color: "#333", fontFamily: "serif", marginLeft: 3 }}>
+                    {numMemsJogging} members
+                </Text>
+                </View>
             </View>
-        </View>
-        <View style={styles.viewEachGroup}>
-            <Image
-            style={styles.imgEachGroup}
-            source={require("../../../assets/images/image/community/medicineAvt.png")}
-            />
-            <View style={{ marginLeft: 15, marginTop: 10 }}>
-            <Text style={styles.titleEachGroup}>Medicine</Text>
-            <Text style={styles.numPostsCommunity}>{numPostMedicine} posts</Text>
-            <TouchableOpacity>
-            <Text style={styles.joinBtn}>Join</Text>
-            </TouchableOpacity>
-            </View>
+            {/* ====== MEDICINE ====== */}
+            <View style={styles.viewEachGroup}>
+                <Image
+                style={styles.imgEachGroup}
+                source={require("../../../assets/images/image/community/medicineAvt.png")}
+                />
+                <View style={{ marginLeft: 15, marginTop: 10 }}>
+                <Text style={styles.titleEachGroup}>Medicine</Text>
+                <Text style={styles.numPostsCommunity}>{numPostMedicine} posts</Text>
+                <TouchableOpacity
+                    onPress={() => {
+                        navigation.navigate("CommunityGroupDetails", {item: "Medicine"})
+                    }}
+                >
+                    <Text style={styles.joinBtn}>Join</Text>
+                </TouchableOpacity>
+                </View>
 
-            <View style={styles.viewContentText}>
-            <Image
-                style={styles.numMembers}
-                source={require("../../../assets/images/image/community/members.png")}
-            />
-            <Text style={{ color: "#333", fontFamily: "serif", marginLeft: 3 }}>
-                {numMemsMedicine} members
-            </Text>
+                <View style={styles.viewContentText}>
+                <Image
+                    style={styles.numMembers}
+                    source={require("../../../assets/images/image/community/members.png")}
+                />
+                <Text style={{ color: "#333", fontFamily: "serif", marginLeft: 3 }}>
+                    {numMemsMedicine} members
+                </Text>
+                </View>
             </View>
-        </View>
         </ScrollView>
     );
 }

@@ -25,6 +25,29 @@ function EditProfile() {
     const { email } = useUser();
     const { name } = useUser();
     const { avatar } = useUser();
+    const [websiteFirst, setWebsiteFirst] = useState('');
+    const [bioFirst, setBioFirst] = useState('');
+    const [phoneFirst, setPhoneFirst] = useState('');
+    const [genderFirst, setGenderFirst] = useState('');
+
+
+    useEffect(() => {
+        const fetchUser  = async () => {
+        try {
+            const response = await getOneUserById({ idUser });
+            console.log('User data:', response.data);
+            setWebsiteFirst(response.data.website);
+            setBioFirst(response.data.bio);
+            setPhoneFirst(response.data.phone);
+            setGenderFirst(response.data.gender);
+        } catch (error) {
+            console.error('Error fetching user:', error);
+        }
+        };
+        fetchUser();
+    }, []);
+
+    
   
     
     // ============================= IMAGE =============================
@@ -118,10 +141,10 @@ function EditProfile() {
     const [namee, setName] = useState(name);
     const [emaill, setEmail] = useState(email);
     // const [avatarr, setAvatar] = useState(avatar);
-    const [websitee, setWebsite] = useState('');
-    const [bioo, setBio] = useState('');
-    const [phonee, setPhone] = useState('');
-    const [genderr, setGender] = useState('');
+    const [websitee, setWebsite] = useState(websiteFirst);
+    const [bioo, setBio] = useState(bioFirst);
+    const [phonee, setPhone] = useState(phoneFirst);
+    const [genderr, setGender] = useState(genderFirst);
 
     const updateProfileUser = async () => {
         console.log("User ID: ", idUser);
@@ -154,6 +177,14 @@ function EditProfile() {
             console.error('Register failed:', err?.response?.data || err.message);
         }
     }
+
+    useEffect(() => {
+        setWebsite(websiteFirst);
+        setBio(bioFirst)
+        setPhone(phoneFirst)
+        setGender(genderFirst)
+    },);
+
 
     return (
         <View style={{ paddingHorizontal: 15 , backgroundColor: "#fff", flex: 1, alignItems: "center"}}>
@@ -214,8 +245,8 @@ function EditProfile() {
                         {/* <Text style= {{fontSize: 18, color: '#ccc',}}>Website</Text> */}
                         <TextInput
                             style= {{fontSize: 18, color: '#000',}}
-                            placeholder={ websitee!=='' ? websitee : "Website"}
-                            placeholderTextColor={websitee === '' ? '#999' : '#000'}
+                            placeholder="Website"
+                            placeholderTextColor='#999'
                             value={websitee}
                             onChangeText={setWebsite}
                         />

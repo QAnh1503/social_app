@@ -1,6 +1,6 @@
 import { SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
 
-import { View, Platform, Text, Image } from 'react-native';
+import { View, Platform, Text, Image, Share, Linking  } from 'react-native';
 import { useUser } from "../../screen/UserContext";
 import { getAllFollowersWithIdUser, getAllFollowingWithIdUser, getAllPostWithIdUser, getOneUserById, loginUser, updateAvatar } from "../../nestjs/api";
 import { useCallback, useEffect, useState } from "react";
@@ -145,6 +145,35 @@ function ProfileDetails() {
             fetchNumPosts();
     }, []);
 
+
+    const onShare = async () => {
+  try {
+    const result = await Share.share({
+      message: 'Check out my profile at https://example.com/myprofile', // link profile hoặc nội dung bạn muốn share
+    });
+    if (result.action === Share.sharedAction) {
+      if (result.activityType) {
+        console.log('Shared with activity type: ', result.activityType);
+      } else {
+        console.log('Shared');
+      }
+    } else if (result.action === Share.dismissedAction) {
+      console.log('Share dismissed');
+    }
+  } catch (error) {
+    //alert(error.message);
+    console.log("error")
+  }
+  const openGmail = () => {
+  const email = 'example@gmail.com';
+  const subject = 'Check out this profile';
+  const body = 'Here is my profile: https://example.com/myprofile';
+  const url = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  
+  Linking.openURL(url).catch(err => console.error('Error opening mail app', err));
+};
+};
+
     return (
         <View style={{ paddingHorizontal: 15 , paddingTop: 20, backgroundColor: '#fff',}}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -177,7 +206,7 @@ function ProfileDetails() {
             </View>
             <Text style= {{fontSize: 18, color: 'black', fontWeight: '500', marginTop: 10}}>{name}</Text>
             <Text style= {{color: 'black'}}>React Native</Text>
-            <Text style= {{color: 'black'}}>Insta Clone</Text>
+            <Text style= {{color: 'black'}}>Nest Js</Text>
             <Text style= {{color: 'black', fontSize: 16, fontWeight: '500'}}>See translation</Text>
 
             <View style= {{flexDirection: 'row', marginTop: 13,justifyContent: 'space-between'}}>
@@ -186,7 +215,9 @@ function ProfileDetails() {
                     style= {{justifyContent: "center",alignItems: 'center', height: 40}}>
                     <Text style= {{backgroundColor: '#E1E1E1',borderRadius: 3, width: 185,paddingHorizontal: 11, paddingVertical: 6, textAlign: 'center', color: 'black'}}>Edit Profile</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style= {{justifyContent: "center",alignItems: 'center', height: 40}}>
+                <TouchableOpacity 
+                    onPress={onShare}
+                    style= {{justifyContent: "center",alignItems: 'center', height: 40}}>
                     <Text style= {{backgroundColor: '#E1E1E1',borderRadius: 3, width: 185, paddingHorizontal: 11, paddingVertical: 6, textAlign: 'center', color: 'black'}}>Share Profile</Text>
                 </TouchableOpacity>
             </View>
