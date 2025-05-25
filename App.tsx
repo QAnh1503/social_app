@@ -16,6 +16,7 @@ import { getFirestore } from 'firebase/firestore';
 import { firebaseConfig } from './FirebaseConfig';
 import Register from './app/screen/Register';
 import { UserProvider } from './app/screen/UserContext';
+import { SocketProvider } from './app/context/SocketContext';
 
 export const FIREBASE_APP = initializeApp(firebaseConfig);
 export const FIREBASE_AUTH = getAuth(FIREBASE_APP);
@@ -49,12 +50,13 @@ function App() {
 
 
       <UserProvider>
-
-        <StackNavigation/>
+        <SocketProvider>
+          <StackNavigation/>
+        </SocketProvider>
       </UserProvider>
       
       {/* <Register/> */}
-    </SafeAreaView>
+     </SafeAreaView>
   );
 }
 

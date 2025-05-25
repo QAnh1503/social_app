@@ -1,42 +1,55 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import CameraIcon from '../../../assets/images/chats/camera.svg'
+import { getOneUserById } from '../../nestjs/api';
 // import { RootStackParamList } from '../../../App';
 
 export type ChatItemType = {
   id: string;
-  name: string;
   lastMessage: string;
   time: string;
   avatar?: string;
+  receiverId: string
 };
 
 type ChatItemProps = {
   chat: ChatItemType;
 };
 
-export default function ChatItem({ chat }: ChatItemProps) {
+export default function ChatItem({ lastMessage, receiverId, time, avatar }: ChatItemType) {
   // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
+  const [receiver, setReceiver] = useState<any>(null);
 
 
   const handlePress = () => {
-    navigation.navigate('Message', { chat });
+    console.log('ttargetId', receiverId)
+    navigation.navigate('Message', {targetId: receiverId});
   };
+
+  const fetchReceiverData = async () => {
+    const receiver = await getOneUserById({idUser: receiverId});
+
+    if (receiver) setReceiver(receiver.data);
+  }
+
+  useEffect(() => {
+    fetchReceiverData();
+  }, [])
 
   return (
     <TouchableOpacity style={styles.chatItem} onPress={handlePress}>
       <View style={styles.chatAvatar}>
-        {chat.avatar ? (
-          <Image source={{ uri: chat.avatar }} style={styles.avatar} />
+        {receiver ? (
+          <Image source={{ uri: receiver.avatar }} style={styles.avatar} />
         ) : (
           <View style={styles.placeholderAvatar} />
         )}
       </View>
       <View style={styles.chatInfo}>
-        <Text style={styles.chatName}>{chat.name}</Text>
-        <Text style={styles.lastMessage}>{chat.lastMessage}</Text>
+        <Text style={styles.chatName}>{(receiver) ? receiver.name : 'Loading'}</Text>
+        <Text style={styles.lastMessage}>{lastMessage}</Text>
       </View>
       <TouchableOpacity style={styles.cameraButton}>
         <CameraIcon width={24} height={24} />

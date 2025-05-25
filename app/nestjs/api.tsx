@@ -3,11 +3,12 @@ import axios from 'axios';
 //const API_URL = 'http://192.168.1.5:3000/'; 
 // const API_URL = "http://192.168.10.29:3000/"; // boyfr
 //const API_URL = "http://192.168.240.1:3000/"; // home
-const API_URL = "http://172.21.64.1:3000/"; 
+// const API_URL = "http://172.21.64.1:3000/"; 
 //const API_URL = "http://192.168.1.168:3000/"; // anh kafe
 // const API_URL = "http://192.168.11.149:3000/"; 
 
- 
+const API_URL = "http://172.26.58.23:3000/";
+
 
 // ===== USER =====
 
@@ -16,7 +17,7 @@ const API_URL = "http://172.21.64.1:3000/";
 // };
 
 export const loginUser = async (data: { email: string; password: string }) => {
-  return await axios.post(`${API_URL}users/login`, data);
+  return await axios.post(`${API_URL}api/v2/users/login`, data);
 };
 
 // export const loginUserID = async (data: { id: number }) => {
@@ -24,135 +25,156 @@ export const loginUser = async (data: { email: string; password: string }) => {
 // };
 
 export const getAll = async () => {
-  return await axios.get(`${API_URL}users/`);
+  return await axios.get(`${API_URL}api/v2/users/`);
 };
 
-export const getOneUserById = async (data: { idUser: number }) => {
-  return await axios.get(`${API_URL}users/id/${data.idUser}`);
+export const getOneUserById = async (data: { idUser: string }) => {
+  return await axios.get(`${API_URL}api/v2/users/id/${data.idUser}`);
 };
 
 export const registerUser = async (data: { email: string; password: string; name: string }) => {
-  return await axios.post(`${API_URL}users/register`, data);
+  return await axios.post(`${API_URL}api/v2/users/register`, data);
 };
 
-export const updateAvatar = async (data: { idUser: number, avatar: string }) => {
-  return await axios.patch(`${API_URL}users/${data.idUser}`, data);
+export const updateAvatar = async (data: { idUser: string, avatar: string }) => {
+  return await axios.put(`${API_URL}api/v2/users/${data.idUser}`, data);
 };
-export const updateUserProfile = async (data: { idUser: number,name: string, email: string , website: string, bio: string, phone: string,gender:string, avatar:string}) => {
-  return await axios.patch(`${API_URL}users/${data.idUser}`, data);
+
+export const updateUserProfile = async (data: { idUser: string, name: string, email: string , website: string, bio: string, phone: string, gender: string, avatar: string }) => {
+  return await axios.put(`${API_URL}api/v2/users/${data.idUser}`, data);
 };
 
 
 // ===== POST =====
 
 export const getAllPost = async () => {
-  return await axios.get(`${API_URL}posts/`);
+  return await axios.get(`${API_URL}api/v2/posts/`);
 }
 
-export const addPost = async (data: {description: string; image: string; tags: string; idUser: number}) => {
-  return await axios.post(`${API_URL}posts/post`, data);
+export const addPost = async (data: { description: string; image: string; tags: string; user: string }) => {
+  return await axios.post(`${API_URL}api/v2/posts/`, data);
 }
 
-export const updatePost = async (data: {idPost: number, likes: number}) => {
-  return await axios.patch(`${API_URL}posts/${data.idPost}`, data);
+export const updatePost = async (data: { id: string, likes: number }) => {
+  return await axios.put(`${API_URL}api/v2/posts/${data.id}`, data);
 }
 
-export const updatePostCmt = async (data: {idPost: number, number_of_comments: number}) => {
-  return await axios.patch(`${API_URL}posts/${data.idPost}`, data);
+export const updatePostCmt = async (data: { id: string, number_of_comments: number }) => {
+  return await axios.put(`${API_URL}api/v2/posts/${data.id}`, data);
 }
 
-export const getAllPostWithIdUser = async (data: {idUser: number;}) => {
-  return await axios.get(`${API_URL}posts/idUser/${data.idUser}`);
+export const getAllPostWithIdUser = async (data: { user: string }) => {
+  return await axios.get(`${API_URL}api/v2/posts?userId=${data.user}`);
 }
 
 
 // ===== STORY =====
 
 export const getAllStory = async () => {
-  return await axios.get(`${API_URL}stories/`);
+  return await axios.get(`${API_URL}api/v2/stories/`);
 }
 
-export const addStory = async (data: { content: string; image: string; idUser: number}) => {
-  return await axios.post(`${API_URL}stories/story`, data);
+export const addStory = async (data: { content: string; image: string; user: string }) => {
+  return await axios.post(`${API_URL}api/v2/stories/`, data);
 }
 
 
 // ===== COMMENT =====
-export const addComment = async (data: { comment: string; idPost: number; idUser: number}) => {
-  return await axios.post(`${API_URL}comments/comment`, data);
+export const addComment = async (data: { comment: string; post: string; user: string }) => {
+  return await axios.post(`${API_URL}api/v2/comments/`, data);
 }
 
-export const getAllCommentWithIdPost = async (data: {idPost: number;}) => {
-  return await axios.get(`${API_URL}comments/${data.idPost}`);
+export const getAllCommentWithIdPost = async (data: { post: string }) => {
+  return await axios.get(`${API_URL}api/v2/comments?postId=${data.post}`);
 }
 
 
 // ===== FOLLOWER =====
-export const getAllFollowersWithIdUser = async (data: {idUser: number;}) => {
-  return await axios.get(`${API_URL}followers/${data.idUser}`);
+export const getAllFollowersWithIdUser = async (data: { user: string }) => {
+  return await axios.get(`${API_URL}api/v2/followers?idUser=${data.user}`);
 }
 
-export const addFollower = async (data: { idUserFollower: number;nameUserFollower: string; idUser: number}) => {
-  return await axios.post(`${API_URL}followers/follower`, data);
+export const addFollower = async (data: { userFollower: string; nameUserFollower: string; user: string }) => {
+  return await axios.post(`${API_URL}api/v2/followers/`, data);
 }
 
-export const checkIdUser_IdUserFollower = async (data: {idUser: number; idUserFollower: number}) => {
-  return await axios.get(`${API_URL}followers/exists/${data.idUser}/${data.idUserFollower}`);
-}
-
-export const deleteFollower = async (data: { idFollower: number;}) => {
-  return await axios.delete(`${API_URL}followers/${data.idFollower}`);
-}
-
-export const deleteFollowerByIdUserIdUserFollower = async (data: { idUser: number; idUserFollower: number}) => {
-  return await axios.delete(`${API_URL}followers/delete/${data.idUser}/${data.idUserFollower}`);
+export const deleteFollower = async (id: string) => {
+  return await axios.delete(`${API_URL}api/v2/followers/${id}`);
 }
 
 
 // ===== FOLLOWING =====
-export const getAllFollowingWithIdUser = async (data: {idUser: number;}) => {
-  return await axios.get(`${API_URL}following/${data.idUser}`);
+export const getAllFollowingWithIdUser = async (data: { user: string }) => {
+  return await axios.get(`${API_URL}api/v2/following?userId=${data.user}`);
 }
 
-export const addFollowing = async (data: { idUserFollowing: number;nameUserFollowing: string; idUser: number}) => {
-  return await axios.post(`${API_URL}following/following`, data);
+export const addFollowing = async (data: { userFollowing: string; nameUserFollowing: string; user: string }) => {
+  return await axios.post(`${API_URL}api/v2/following/`, data);
 }
 
-export const checkIdUser_IdUserFollowing = async (data: {idUser: number; idUserFollowing: number}) => {
-  return await axios.get(`${API_URL}following/exists/${data.idUser}/${data.idUserFollowing}`);
-}
-
-export const deleteFollowing = async (data: { idUser: number; idUserFollowing: number}) => {
-  return await axios.delete(`${API_URL}following/${data.idUser}/${data.idUserFollowing}`);
+export const deleteFollowing = async (id: string) => {
+  return await axios.delete(`${API_URL}api/v2/following/${id}`);
 }
 
 
 // ===== QUESTION =====
 
 export const getAllQues = async () => {
-  return await axios.get(`${API_URL}questions/`);
+  return await axios.get(`${API_URL}api/v2/questions/`);
 }
 
 export const getAllQuesWithTags = async (data: {tags: string;}) => {
   return await axios.get(`${API_URL}questions/${data.tags}`);
 }
 
-export const addQues = async (data: { question: string; idUser: number; tags: string}) => {
-  return await axios.post(`${API_URL}questions/question`, data);
+export const addQues = async (data: { question: string; user: string; tags: string }) => {
+  return await axios.post(`${API_URL}api/v2/questions/`, data);
 }
 
 
 // ===== ANSWER =====
 
 export const getAllAns = async () => {
-  return await axios.get(`${API_URL}answers/`);
+  return await axios.get(`${API_URL}api/v2/answers/`);
 }
 
-export const getAllAnsWithIdQues = async (data: {idQues: number;}) => {
-  return await axios.get(`${API_URL}answers/${data.idQues}`);
+export const getAllAnsWithQuestionId = async (data: { question: string }) => {
+  return await axios.get(`${API_URL}api/v2/answers?questionId=${data.question}`);
 }
 
-export const addAns = async (data: { answer: string; idUser: number; idQues: number}) => {
-  return await axios.post(`${API_URL}answers/answer`, data);
+export const addAns = async (data: { answer: string; user: string; question: string }) => {
+  return await axios.post(`${API_URL}api/v2/answers/`, data);
 }
 
+
+// ===== PRODUCT =====
+export const getAllProducts = async () => {
+  return await axios.get(`${API_URL}api/v2/products/`);
+};
+
+export const getProductById = async (id: string) => {
+  return await axios.get(`${API_URL}api/v2/products/${id}`);
+};
+
+export const addProduct = async (data: { name: string; price: number; description: string }) => {
+  return await axios.post(`${API_URL}api/v2/products/`, data);
+};
+
+export const updateProduct = async (id: string, data: { name?: string; price?: number; description?: string }) => {
+  return await axios.put(`${API_URL}api/v2/products/${id}`, data);
+};
+
+export const deleteProduct = async (id: string) => {
+  return await axios.delete(`${API_URL}api/v2/products/${id}`);
+};
+
+
+
+//= = = =  Messages = = = =
+export const getMessages = async (idUser_1: any, idUser_2: any) => {
+  return await axios.get(`${API_URL}api/v2/messages/conversations/${idUser_1}/${idUser_2}`)
+}
+
+export const getConversations = async (idUser: any) => {
+  return await axios.get(`${API_URL}api/v2/messages/conversations/${idUser}`)
+}
