@@ -1,8 +1,11 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
+import axios from "axios";
 import { useState } from "react";
-import { Image, Modal, SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
+import { Button, Image, Linking, Modal, SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
 
 import { View, Platform, Text } from 'react-native';
+import { addCoins } from "../../nestjs/api";
+import { useUser } from "../../screen/UserContext";
 
 const styles = StyleSheet.create({
     container: {
@@ -21,6 +24,7 @@ const styles = StyleSheet.create({
 function ProfileHeader() {
 
     const navigation: NavigationProp<RootStackParamList> = useNavigation();
+    const userContext = useUser();
     
 
     const [open, setOpen] = useState(false)
@@ -35,6 +39,7 @@ function ProfileHeader() {
 
 
     const [openPost_Story, setOpenPost_Story] = useState(false)
+    const [displayAddCoinModal, setDisplayAddCoinModal] = useState(false);
     const handleModal_Post_Story = () => {
         console.log("modal of Adding Post / Story")
         setOpenPost_Story(true)
@@ -44,12 +49,37 @@ function ProfileHeader() {
         setOpenPost_Story(false);
     };
 
+    const handleFetchAddCoin = async (itemType: number) => {
 
+
+        const response = await addCoins(userContext.idUser, itemType)
+        console.log(response)
+        const url = response.data.href;
+
+        Linking.openURL(url).catch(error => console.error(error))
+    }
+
+    const handleAddCoinModel = () => {
+        setDisplayAddCoinModal(true);
+    }
     return (
         <View style={styles.headerProfile}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Text style={{ fontSize: 24, fontWeight: '500', color: 'black' }}>vibely.balance__</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <TouchableOpacity 
+                        style={{ marginRight: 17 }} 
+                        onPress={() => 
+                            //navigation.navigate('AddPost')
+                            // {navigation.navigate('Payment', {})}
+                            {handleAddCoinModel()}
+                        }>
+                            {/* <Text>[More coins!]</Text> */}
+                        <Image
+                            style={{ height: 27, width: 27, opacity: 0.6}}
+                            source={require('../../../assets/images/coin.png')}
+                        />
+                    </TouchableOpacity>
                     <TouchableOpacity 
                         style={{ marginRight: 17 }} 
                         onPress={() => 
@@ -162,6 +192,41 @@ function ProfileHeader() {
                             </View>
                         </TouchableOpacity>
                     </View>
+                </View>
+            </Modal>
+
+            <Modal
+            animationType="slide"
+            transparent= {true}
+            visible= {displayAddCoinModal}
+            onRequestClose={() => {
+                setDisplayAddCoinModal(false)
+            }}
+            >
+                <View style= {{flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)'}}>
+                    <View style= {{backgroundColor: '#ffffff', height: 650, borderTopEndRadius: 25, borderTopStartRadius: 25}}>
+                    <TouchableOpacity  onPress={() => {setDisplayAddCoinModal(false)}} accessibilityLabel="Close modal">
+                            <Image 
+                                style= {{alignSelf: 'center', height: 40, width: 60}} 
+                                source={require('../../../assets/images/image/profile_user/menu_details_list/horizontal_line.png')}
+                            />
+                            <Text style= {{alignSelf: "center", fontSize: 17, fontWeight: "400", color:"#666", marginTop: 5,}}>Add Coins</Text>
+                            <View style= {{borderBottomWidth: 1, borderColor: "#eee", marginTop: 45}}></View>
+                            <View style= {{paddingHorizontal: 20, paddingTop: 10}}>
+                                <TouchableOpacity 
+                                    onPress={() => {
+                                        setDisplayAddCoinModal(false)
+                                    }}
+                                    style= {{ flexDirection: "column", gap: 20}}
+                                >
+                                    <Button onPress={() => {handleFetchAddCoin(1)}} title="10 coins" color={'#5459AC'}/>
+                                    <Button onPress={() => {handleFetchAddCoin(2)}} title="30 coins" color={'#5459AC'}/>
+                                    <Button onPress={() => {handleFetchAddCoin(3)}} title="50 coins" color={'#5459AC'}/>
+
+                                </TouchableOpacity>
+                            </View>
+                        </TouchableOpacity>
+                </View>
                 </View>
             </Modal>
 

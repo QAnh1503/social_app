@@ -24,6 +24,7 @@ import UserProfileSearch from "../../components/dashboard/search/UserProfileSear
 import CommunityGroupDetails from "../../screen/community/CommunityGroupDetails";
 import CommunityFood from "../../screen/community/CommunityFood";
 import Answer from "../../screen/community/Answer";
+import Payment from "../../screen/Payment";
 
 
 
@@ -47,6 +48,8 @@ const StackNavigation = () => {
                 <Stack.Screen name="Message" component={Message}/>
                 <Stack.Screen name="Login" component={Login}/>
                 <Stack.Screen name="Register" component={Register}/>
+
+                <Stack.Screen name="Payment" component={Payment}/>
 
                 <Stack.Screen name="AddPost" component={AddPost}/>
                 <Stack.Screen name="EditProfile" component={EditProfile}/>
