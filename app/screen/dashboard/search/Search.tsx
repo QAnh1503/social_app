@@ -42,6 +42,7 @@ const Search = () => {
                 try {
                     const response = await getAll();
                     setUsers(response.data);        // lưu toàn bộ users
+                    console.log(response.data)
                     //setFilteredUsers(response.data); // mặc định hiện hết
     
                 } catch (error) {
@@ -90,7 +91,7 @@ const Search = () => {
                         {filteredUsers.map((user, index) => (
                             <TouchableOpacity
                                 onPress={() => {
-                                    console.log(user)
+                                    console.log('hehe', user)
                                     navigation.navigate("UserProfileSearch", { user })
                                 }}
                                 key={user.idUser}

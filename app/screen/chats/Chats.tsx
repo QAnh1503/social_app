@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 // import { RootStackParamList } from '../../../../App';
@@ -7,17 +7,34 @@ import { DUMMY_CHATS } from '../../data/dummyChat';
 import BackIcon from '../../../assets/images/chats/back.svg'
 import NewChatIcon from '../../../assets/images/chats/newChat.svg'
 import NewVideoCallIcon from '../../../assets/images/chats/videoCall.svg'
+import axios from 'axios';
+import { useUser } from '../UserContext';
+import { getConversations } from '../../nestjs/api';
 
 
 export default function Chats() {
   // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
+  const [messages, setMessages] = useState([]);
 
+  const { idUser } = useUser();
+  console.log('id:' ,idUser)
+
+  const handleGetConversations = async () => {
+    const response = await getConversations(idUser);
+
+    console.log(response.data)
+    setMessages(response.data)
+  }
 
   const handleBackPress = () => {
     navigation.navigate('Dashboard');
   };
+
+  useEffect(() => {
+    handleGetConversations();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -30,11 +47,11 @@ export default function Chats() {
         <View style={styles.headerButtons}>
           <TouchableOpacity style={styles.iconButton}>
             <NewVideoCallIcon width={24} height={24}/>
-            {/* <Text>📹</Text> */}
+            
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton}>
           <NewChatIcon width={24} height={24}/>
-            {/* <Text>✏️</Text> */}
+            
           </TouchableOpacity>
         </View>
       </View>
@@ -60,9 +77,9 @@ export default function Chats() {
       </View>
 
       <ScrollView>
-        {DUMMY_CHATS.map((chat) => (
-          <ChatItem key={chat.id} chat={chat} />
-        ))}
+        {(messages.length != 0) ?
+          messages.map((element, index) => { return(<ChatItem id={index} receiverId={element.lastMessage.receiverId} name={element.userId} lastMessage={element.lastMessage.content} time=''/>)})
+        : (<View><Text>Nothing here</Text></View>)}
       </ScrollView>
     </View>
   );

@@ -11,7 +11,7 @@ type RootStackParamList = {
     // Dashboard: { email: string }; // <-- thêm email
     ChatScreen: undefined;
     // Message: {chat: any}
-    Message: {chat: any}
+    Message: {targetId: string}
     Login: undefined;
     Register: undefined;
 
@@ -33,7 +33,7 @@ type RootStackParamList = {
     Followings: undefined
 
     UserProfileFollow: {item: any};
-    UserProfileSearch: { user: User }; 
+    UserProfileSearch: { user: any }; 
 
     // Community
     CommunityGroupDetails: undefined;

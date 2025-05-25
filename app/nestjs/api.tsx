@@ -7,7 +7,7 @@ import axios from 'axios';
 //const API_URL = "http://192.168.1.168:3000/"; // anh kafe
 // const API_URL = "http://192.168.11.149:3000/"; 
 
-const API_URL = "http://192.168.1.92:3000/";
+const API_URL = "http://172.26.58.23:3000/";
 
 
 // ===== USER =====
@@ -168,3 +168,13 @@ export const deleteProduct = async (id: string) => {
   return await axios.delete(`${API_URL}api/v2/products/${id}`);
 };
 
+
+
+//= = = =  Messages = = = =
+export const getMessages = async (idUser_1: any, idUser_2: any) => {
+  return await axios.get(`${API_URL}api/v2/messages/conversations/${idUser_1}/${idUser_2}`)
+}
+
+export const getConversations = async (idUser: any) => {
+  return await axios.get(`${API_URL}api/v2/messages/conversations/${idUser}`)
+}
