@@ -7,7 +7,7 @@ import axios from 'axios';
 //const API_URL = "http://192.168.1.168:3000/"; // anh kafe
 // const API_URL = "http://192.168.11.149:3000/"; 
 
-const API_URL = "http://192.168.1.241:3000/";
+const API_URL = "http://192.168.1.92:3000/";
 
 
 // ===== USER =====
@@ -180,4 +180,8 @@ export const getMessages = async (idUser_1: any, idUser_2: any) => {
 
 export const getConversations = async (idUser: any) => {
   return await axios.get(`${API_URL}api/v2/messages/conversations/${idUser}`)
+}
+
+export const addCoins = async (idUser: any, itemType: any) => {
+  return await axios.get(`${API_URL}api/v2/momo/getPayment/${idUser}/${itemType}`)
 }
