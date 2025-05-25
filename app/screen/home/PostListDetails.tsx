@@ -217,15 +217,22 @@ function PostListDetails() {
                     idPost: selectedItem.idPost,
                     number_of_comments: cmtsUser.length + 1
                 });
+
+                 route.params.onUpdatePost(selectedItem.idPost, likeCount, cmtsUser.length + 1);
             } catch (err) {
             console.error("Lỗi khi lấy stories:", err);
         }
     };
 
     // ------------------- HANDLE LIKES ------------------------
-    const [isLiked, setIsLiked] = useState(false); // Mặc định là chưa like
-    const [likeCount, setLikeCount] = useState(selectedItem.likes); // Thêm state đếm like
-
+    //const [isLiked, setIsLiked] = useState(false); // Mặc định là chưa like
+    //const [likeCount, setLikeCount] = useState(selectedItem.likes); // Thêm state đếm like
+    const [likeCount, setLikeCount] = useState(selectedItem.likesCount); // chọn likesCount (đã được cập nhật trong PostList)
+    const [isLiked, setIsLiked] = useState(selectedItem.isLiked);
+    useEffect(() => {
+        setLikeCount(selectedItem.likesCount);
+        setIsLiked(selectedItem.isLiked);
+    }, [selectedItem]);
     const handleLike = async (postId: string) => {
         let newLikeCount = likeCount;
 
@@ -241,6 +248,8 @@ function PostListDetails() {
             idPost: selectedItem.idPost,
             likes: newLikeCount
         })
+
+        route.params.onUpdatePost(selectedItem.idPost, newLikeCount, cmtsUser.length);
         console.log("UPDATE LIKES SUCCESSFULLY !!!")
     };
     

@@ -199,6 +199,17 @@ function PostList() {
 
   const [numColumns, setNumColumns] = useState(1); 
 
+  const handleUpdatePost = (postId: string, newLikes: number, newCmtCount: number) => {
+    setPostsUser((prev) =>
+      prev.map((post) =>
+        post.idPost === postId
+          ? { ...post, likesCount: newLikes, number_of_comments: newCmtCount }
+          : post
+      )
+    );
+  };
+
+
   return (
     <>
       <FlatList
@@ -300,9 +311,13 @@ function PostList() {
               </TouchableOpacity>
 
               <TouchableOpacity 
-                onPress={() => 
-                  navigation.navigate("PostListDetails", {item})
-                }
+                onPress={() => {
+                  const updatedItem = postsUser.find((post) => post.idPost === item.idPost);
+                  navigation.navigate("PostListDetails", {
+                    item: updatedItem || item,
+                    onUpdatePost: handleUpdatePost
+                  })
+                }}
                 
                 style={styles.statButton} 
               >

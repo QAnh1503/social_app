@@ -27,7 +27,7 @@ type RootStackParamList = {
     AddStory: undefined;
 
     ProfilePostDetail: {item: any};
-    PostListDetails: {item: any};
+    PostListDetails: {item: any,  onUpdatePost: (postId: string, newLikes: number, newCmtCount: number) => void;};
 
     Followers: undefined;
     Followings: undefined
