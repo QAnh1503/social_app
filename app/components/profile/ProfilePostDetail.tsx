@@ -44,10 +44,10 @@ const styles = StyleSheet.create({
 
 
 type CommentUser = {
-    idPost: number;
+    idPost: string;
     comment: string;
     created_at: string;
-    idUser: number;
+    idUser: string;
     name: string;
     avatar: string;
 }
@@ -61,31 +61,31 @@ function ProfilePostDetail() {
     console.log(idUserRecent);
 
     // ----------- GET NAMERECENT, AVTRECENT FROM IDUSER -------------------
-    useFocusEffect(
-        useCallback(() => {
-        const fetchUserRecent = async () => {
-            try {
-            // Giả sử selectedItem được truyền từ props hoặc state
-            const res = await getOneUserById({ idUser: idUserRecent });
-            const user = res.data;
+    // useFocusEffect(
+    //     useCallback(() => {
+    //     const fetchUserRecent = async () => {
+    //         try {
+    //         // Giả sử selectedItem được truyền từ props hoặc state
+    //         const res = await getOneUserById({ idUser: idUserRecent });
+    //         const user = res.data;
 
-            const userRecent = {
-                name: user.name,
-                avatar: user.avatar,
-            };
-            setNameRecent(user.name);
-            setAvtRecent(user.avatar);
-            console.log("AVATAR USER RECENT: "+user.avatar)
-            console.log("NAME USER RECENT: "+user.name)
+    //         const userRecent = {
+    //             name: user.name,
+    //             avatar: user.avatar,
+    //         };
+    //         setNameRecent(user.name);
+    //         setAvtRecent(user.avatar);
+    //         console.log("AVATAR USER RECENT: "+user.avatar)
+    //         console.log("NAME USER RECENT: "+user.name)
           
-            } catch (err) {
-            console.error("Lỗi khi lấy user recent:", err);
-            }
-        };
+    //         } catch (err) {
+    //         console.error("Lỗi khi lấy user recent:", err);
+    //         }
+    //     };
 
-        fetchUserRecent(); // Đừng quên gọi hàm      
-        }, [idUserRecent]) // thêm dependency để tránh warning
-    );
+    //     fetchUserRecent(); // Đừng quên gọi hàm      
+    //     }, [idUserRecent]) // thêm dependency để tránh warning
+    // );
     console.log("---------------------------------------------------------------")
     console.log("")
 
@@ -97,14 +97,19 @@ function ProfilePostDetail() {
     //console.log(route.params.item)
     const selectedItem = route.params.item;
 
-    console.log("ID POST: " + selectedItem.idPost);
+    console.log("ID POST: " + selectedItem._id);
     console.log("IMAGE POST: " + selectedItem.image);
     console.log("DESCRIPTION: " + selectedItem.description);
     console.log("TAGS: " + selectedItem.tags);
     console.log("LIKES: " + selectedItem.likes);
     console.log("NUMBER OF COMMENTS: " + selectedItem.number_of_comments);
     console.log("CREATE_AT: " + selectedItem.created_at);
-    console.log("ID USER: " + selectedItem.idUser); // id of user create post
+    console.log("ID USER: " + idUser); // id of user create post
+    console.log("CREATE_AT: " + selectedItem.created_at);
+    console.log("USER AVATAR: " + selectedItem.user.avatar);
+    console.log("USER NAME: " + selectedItem.user.avatar);
+    const name = selectedItem.user.name;
+    const avatar = selectedItem.user.avatar;
     
     const create_atPost = formatDistanceToNow(new Date(selectedItem.created_at), {
         addSuffix: true,
@@ -114,36 +119,37 @@ function ProfilePostDetail() {
     console.log("")
 
 
-    const [name, setName] = useState('')
-    const [avatar, setAvatar] = useState('')
+    // const [name, setName] = useState('')
+    // const [avatar, setAvatar] = useState('')
     // ----------- GET NAME, AVATAR USER WITH IDUSER(ID FROM EACH POST) -------------------
-    useFocusEffect(
-        useCallback(() => {
-        const fetchStories = async () => {
-            try {
-            // Giả sử selectedItem được truyền từ props hoặc state
-            const res = await getOneUserById({ idUser: selectedItem.idUser });
-            const user = res.data;
+    // useFocusEffect(
+    //     useCallback(() => {
+    //     const fetchStories = async () => {
+    //         try {
+    //         // Giả sử selectedItem được truyền từ props hoặc state
+    //         const res = await getOneUserById({ idUser: selectedItem.idUser });
+    //         const user = res.data;
 
-            const storyUser = {
-                name: user.name,
-                avatar: user.avatar,
-            };
-            setName(user.name);
-            setAvatar(user.avatar);
-            //   console.log("with user info:", storyUser);
-            console.log("AVATAR USER: "+user.avatar)
-            console.log("NAME USER: "+user.name)
-            console.log("---------------------------------------------------------------")
-            console.log("")
-            } catch (err) {
-            console.error("Lỗi khi lấy stories:", err);
-            }
-        };
+    //         const storyUser = {
+    //             name: user.name,
+    //             avatar: user.avatar,
+    //         };
+    //         setName(user.name);
+    //         setAvatar(user.avatar);
+    //         //   console.log("with user info:", storyUser);
+    //         console.log("AVATAR USER: "+user.avatar)
+    //         console.log("NAME USER: "+user.name)
+    //         console.log("---------------------------------------------------------------")
+    //         console.log("")
+    //         } catch (err) {
+    //         console.error("Lỗi khi lấy stories:", err);
+    //         }
+    //     };
 
-        fetchStories(); // Đừng quên gọi hàm      
-        }, [selectedItem.idUser]) // thêm dependency để tránh warning
-    );
+    //     fetchStories(); // Đừng quên gọi hàm      
+    //     }, [selectedItem.idUser]) // thêm dependency để tránh warning
+    // );
+    
     
 
     // ----------- GET ALL COMMENTS WITH IDPOST -------------------
@@ -188,32 +194,31 @@ function ProfilePostDetail() {
     useEffect(() => {
         const fetchCmts = async () => {
             try {
-                const response = await getAllCommentWithIdPost({idPost: selectedItem.idPost})
+                const response = await getAllCommentWithIdPost({idPost: selectedItem._id})
                 const cmts = response.data;
     
-                console.log("------------------COMMENTS-----------------");
-                console.log(cmts);
     
                 console.log("------------------COMMENTS DETAILS-----------------");
+
+                console.log("CMT W ID POST: ", cmts)
                 for (const cmt of cmts) {
-                    const userResponse = await getOneUserById({ idUser: cmt.idUser });
-                    const cmtUserr = userResponse.data;
-                    const cmtUser= {
-                        idPost: cmt.idPost,
+                const cmtUser= {
+                        idPost: cmt._id,
                         comment: cmt.comment,
                         created_at: formatDistanceToNow(new Date(cmt.created_at), { addSuffix: true }),
-                        idUser: cmt.idUser, // id of user create comment
-                        name: cmtUserr.name,
-                        avatar: cmtUserr.avatar,
-                    }
-                   
-                cmtsWithUser.push(cmtUser);
+                        idUser: cmt.user._id, // id of user create comment
+                        name: cmt.user.name,
+                        avatar: cmt.user.avatar,
                 }
+                cmtsWithUser.push(cmtUser);
+            }
+                   
+                
     
             console.log("✅ Comments with user info:", cmtsWithUser);
             setCmtsUser(cmtsWithUser);
           } catch (error) {
-            console.error("❌ Failed to fetch posts:", error);
+            console.error("❌ Failed to fetch cmts w/ id post:", error);
           }
         };
     
@@ -226,8 +231,8 @@ function ProfilePostDetail() {
         try {
             const res = await addComment({ 
                 comment,
-                idPost: selectedItem.idPost,
-                idUser
+                idPost: selectedItem._id,
+                user: idUser
             });
                 console.log("UPLOAD COMMENT SUCCESSFULLY !")
                 setComment('')
@@ -235,7 +240,7 @@ function ProfilePostDetail() {
 
                 // Cập nhật DB (nếu cần thiết)
                 await updatePostCmt({
-                    idPost: selectedItem.idPost,
+                    id: selectedItem._id,
                     number_of_comments: cmtsUser.length + 1
                 });
             } catch (err) {
@@ -258,8 +263,9 @@ function ProfilePostDetail() {
             setIsLiked(false);
         }
         setLikeCount(newLikeCount); // Cập nhật hiển thị giao diện
-        const res = await updatePost({
-            idPost: selectedItem.idPost,
+        console.log("LIKE COUNT",likeCount)
+        await updatePost({
+            id: selectedItem._id,
             likes: newLikeCount
         })
         console.log("UPDATE LIKES SUCCESSFULLY !!!")

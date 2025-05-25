@@ -63,8 +63,11 @@ export const updatePostCmt = async (data: { id: string, number_of_comments: numb
   return await axios.put(`${API_URL}api/v2/posts/${data.id}`, data);
 }
 
+// export const getAllPostWithIdUser = async (data: { user: string }) => {
+//   return await axios.get(`${API_URL}api/v2/posts?userId=${data.user}`);
+// }
 export const getAllPostWithIdUser = async (data: { user: string }) => {
-  return await axios.get(`${API_URL}api/v2/posts?userId=${data.user}`);
+  return await axios.get(`${API_URL}api/v2/posts/idUser/${data.user}`);
 }
 
 
@@ -80,8 +83,8 @@ export const addStory = async (data: { content: string; image: string; user: str
 
 
 // ===== COMMENT =====
-export const addComment = async (data: { comment: string; post: string; user: string }) => {
-  return await axios.post(`${API_URL}api/v2/comments/`, data);
+export const addComment = async (data: { comment: string; idPost: string; user: string }) => {
+  return await axios.post(`${API_URL}api/v2/comments/comment`, data);
 }
 
 // export const getAllCommentWithIdPost = async (data: { idPost: string }) => {
