@@ -15,6 +15,7 @@ type RootStackParamList = {
     Login: undefined;
     Register: undefined;
 
+    Payment: {};
     // chat: {
     //   name: string;
     //   avatar?: string;
