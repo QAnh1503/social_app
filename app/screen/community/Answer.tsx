@@ -13,7 +13,8 @@ import { useUser } from "../UserContext";
 import { useCallback, useEffect, useState } from "react";
 import {
     addAns,
-  getAllAnsWithIdQues,
+  getAllAnsWithQuestionId,
+  // getAllAnsWithIdQues,
   getAllQuesWithTags,
   getOneUserById,
 } from "../../nestjs/api";
@@ -62,10 +63,12 @@ console.log("CREATED AT QUESTION: " + selectedItem.created_at);
 
 //   useFocusEffect(
 //     useCallback(() => {
+
+    // ===== FETCH ANSWER W/ ID QUES =====
       const fetchUsers = async () => {
         try {
-          const response = await getAllAnsWithIdQues({
-            idQues: selectedItem.idQues,
+          const response = await getAllAnsWithQuestionId({
+            question: selectedItem._id,
           });
           const ans = response.data;
 
@@ -73,12 +76,13 @@ console.log("CREATED AT QUESTION: " + selectedItem.created_at);
           const enrichedAnswers = await Promise.all(
             ans.map(async (answer: any) => {
               try {
-                const userRes = await getOneUserById({ idUser: answer.idUser });
+                const userRes = await getOneUserById({ user: answer.user._id });
                 const user = userRes.data;
                 return {
                   ...answer,
                   name: user.name,
                   avatar: user.avatar,
+                  created_at_raw: answer.created_at, // giữ lại để sort
                    created_at: formatDistanceToNow(new Date(answer.created_at), { addSuffix: true }),
                 };
               } catch (err) {
@@ -87,12 +91,17 @@ console.log("CREATED AT QUESTION: " + selectedItem.created_at);
                   ...answer,
                   name: "Unknown",
                   avatar: null,
+                  created_at_raw: answer.created_at, // giữ lại để sort
                 };
               }
             })
           );
 
-          setAnswerWithUser(enrichedAnswers);
+          const sortedAnswers = enrichedAnswers.sort(
+            (a, b) => new Date(b.created_at_raw).getTime() - new Date(a.created_at_raw).getTime()
+          );
+
+          setAnswerWithUser(sortedAnswers);
           //console.log("ANSWERS W USERS ", answersWithUser);
         } catch (error) {
           console.error("❌ Failed to fetch users:", error);
@@ -115,8 +124,8 @@ console.log("CREATED AT QUESTION: " + selectedItem.created_at);
             try {
                 const res = await addAns({ 
                     answer: comment,
-                    idUser: idUser,
-                    idQues: selectedItem.idQues
+                    user: idUser,
+                    question: selectedItem._id
                 });
                     console.log("ADD ANSWER SUCCESSFULLY !")
                     setComment('')
@@ -130,142 +139,45 @@ console.log("CREATED AT QUESTION: " + selectedItem.created_at);
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.viewImgMainGroup}>
-        <View
-          style={{
-            flexDirection: "row",
-            paddingTop: 15,
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
+      <View style={styles.viewQues}>
+        <View style={styles.viewQuesHeader}>
           <View style={{ flexDirection: "row" }}>
             <Image
-              style={{
-                width: 50,
-                height: 50,
-                //position: "absolute",
-                borderRadius: 80,
-                // top: 160,
-                // left: 20,
-              }}
+              style={styles.quesAvt}
               source={{ uri: selectedItem.avatar }}
             />
-            <Text
-              style={{
-                fontSize: 22,
-                fontWeight: "800",
-                color: "#000",
-                fontFamily: "serif",
-                marginTop: 5,
-                marginLeft: 17,
-              }}
-            >
-              {selectedItem.userName}
-            </Text>
+            <Text style={styles.quesUsername}>{selectedItem.userName}</Text>
           </View>
-          <Text
-            style={{
-              fontSize: 13,
-              color: "#666",
-              //fontFamily: "serif",
-              //marginTop: 12,
-              marginRight: 6,
-            }}
-          >
-            {selectedItem.created_at}
-          </Text>
+          <Text style={styles.quesCreatedAt}>{selectedItem.created_at}</Text>
         </View>
-        <View
-          style={{
-            marginTop: 15,
-            backgroundColor: "#ffe4e1",
-            height: 120,
-            alignItems: "center",
-            justifyContent: "center",
-            paddingHorizontal: 18,
-            borderBottomRightRadius: 20,
-            borderBottomLeftRadius: 20,
-            borderTopEndRadius: 20,
-          }}
-        >
-          <Text
-            style={{
-              fontFamily: "serif",
-              fontSize: 17,
-              color: "#f08080",
-              lineHeight: 25,
-            }}
-          >
-            {selectedItem.question}
-          </Text>
+        <View style={styles.viewQuesDetails}>
+          <Text style={styles.txtQues}>{selectedItem.question}</Text>
         </View>
       </View>
 
-
       <View style={styles.viewContentGroup}>
-        <Text
-          style={{
-            fontSize: 14,
-            fontFamily: "serif",
-            position: "absolute",
-            right: 20,
-            top: 20,
-          }}
-        >
-          Thoughts
-        </Text>
+        <Text style={styles.thoughts}>Thoughts</Text>
 
         {answersWithUser.map((item) => (
-            <View key={item.idAns} style={{ flexDirection: "row", marginTop: 45, }}>
+          <View
+            key={item.idAns}
+            style={{ flexDirection: "row", marginTop: 45 }}
+          >
+            <Image style={styles.ansAvt} source={{ uri: item.avatar }} />
+            <View style={{ position: "relative" }}>
+              <Text style={styles.ansUsername}>{item.name}</Text>
+              <Text style={styles.txtAns}>{item.answer}</Text>
+              <View style={styles.viewAnsCreatedAt}>
                 <Image
-                    style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 80,
-                    }}
-                    source={{ uri: item.avatar }}
+                  style={styles.imgTime}
+                  source={require("../../../assets/images/image/community/clock.png")}
                 />
-                <View style= {{position: "relative"}}>
-                    <Text
-                    style={{
-                        fontSize: 13,
-                        fontWeight: "800",
-                        color: "#000",
-                        fontFamily: "serif",
-                        marginLeft: 17,
-                    }}
-                    >
-                    {item.name}
-                    </Text>
-                    <Text
-                    style={{
-                        fontSize: 13,
-                        color: "#000",
-                        fontFamily: "serif",
-                        marginTop: 5,
-                        marginLeft: 17,
-                        maxWidth: 320,
-                        lineHeight: 17
-                    }}
-                    >
-                    {item.answer}
-                    </Text>
-                    <View style= {{position: "absolute", bottom: -10, right: 0, flexDirection: "row", alignItems: "center"}}>
-                        <Image
-                            style={{
-                            width: 15,
-                            height: 15,
-                            }}
-                            source={require("../../../assets/images/image/community/clock.png")}
-                        />
-                        <Text style= {{ color: "#666", fontSize: 12, marginLeft: 9}}>{item.created_at}</Text>
-                    </View>
-                </View>
+                <Text style={styles.txtAnsCreatedAt}>{item.created_at}</Text>
+              </View>
             </View>
+          </View>
         ))}
 
-        
         <View style={styles.viewTextinputCmt}>
           <View style={styles.viewTextinputCmtComponents}>
             <View style={styles.viewAvtTextinputCmt}>
@@ -279,13 +191,7 @@ console.log("CREATED AT QUESTION: " + selectedItem.created_at);
               <TextInput
                 value={comment} // thêm dòng này để TextInput sync với state
                 onChangeText={setComment}
-                style={{
-                  marginLeft: 10,
-                  fontSize: 16,
-                  maxWidth: 320,
-                  fontFamily: "serif",
-                  marginTop: -5,
-                }}
+                style={styles.txtInput}
                 placeholder="Your answer"
                 placeholderTextColor="#ccc"
                 multiline
@@ -316,7 +222,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
-  viewImgMainGroup: {
+  viewQues: {
     // position: "relative",
     backgroundColor: "#fff",
     //height: 300,
@@ -331,7 +237,92 @@ const styles = StyleSheet.create({
     shadowRadius: 9, // lan tỏa xa hơn
     elevation: 6, // cần thiết cho Android
   },
+  viewQuesHeader: {
+    flexDirection: "row",
+    paddingTop: 15,
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  quesAvt: {
+    width: 50,
+    height: 50,
+    borderRadius: 80,
+  },
+  quesUsername: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: "#000",
+    fontFamily: "serif",
+    marginTop: 5,
+    marginLeft: 17,
+  },
+  quesCreatedAt: {
+    fontSize: 13,
+    color: "#666",
+    marginRight: 6,
+  },
+  viewQuesDetails: {
+    marginTop: 15,
+    height: 120,
+    backgroundColor: "#ffe4e1",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 18,
+    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 20,
+    borderTopEndRadius: 20,
+  },
+  txtQues: {
+    fontFamily: "serif",
+    fontSize: 17,
+    color: "#f08080",
+    lineHeight: 25,
+  },
 
+  thoughts: {
+    fontSize: 14,
+    fontFamily: "serif",
+    position: "absolute",
+    right: 20,
+    top: 20,
+  },
+  ansAvt: {
+    width: 40,
+    height: 40,
+    borderRadius: 80,
+  },
+  ansUsername: {
+    fontSize: 13,
+    fontWeight: "800",
+    color: "#000",
+    fontFamily: "serif",
+    marginLeft: 17,
+  },
+  txtAns: {
+    fontSize: 13,
+    color: "#000",
+    fontFamily: "serif",
+    marginTop: 5,
+    marginLeft: 17,
+    maxWidth: 320,
+    lineHeight: 17,
+  },
+  viewAnsCreatedAt: {
+    position: "absolute",
+    bottom: -20,
+    right: 0,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  imgTime: {
+    width: 15,
+    height: 15,
+  },
+  txtAnsCreatedAt: {
+    color: "#666",
+    fontSize: 12,
+    marginLeft: 9,
+  },
   viewContentGroup: {
     position: "relative",
     marginTop: 10,
@@ -339,7 +330,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     height: 600,
     paddingHorizontal: 17,
-  
+
     borderColor: "#ccc",
     shadowColor: "#000",
     shadowOpacity: 0.1, // tăng độ đậm bóng
@@ -357,6 +348,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: 380,
     bottom: 20,
+  },
+  txtInput: {
+    marginLeft: 10,
+    fontSize: 16,
+    maxWidth: 320,
+    fontFamily: "serif",
+    marginTop: -5,
   },
   viewTextinputCmtComponents: {
     flexDirection: "row",

@@ -44,9 +44,9 @@ function ProfilePost() {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await getAllPostWithIdUser({idUser});
+                const response = await getAllPostWithIdUser({user: idUser});
                 setPostsUser(response.data); // set danh sách post
-                console.log("Fetched posts:", response.data);
+                console.log("Fetched postsssssssssss:", response.data);
             } catch (error) {
                 console.error("Failed to fetch posts:", error);
             }
@@ -58,29 +58,7 @@ function ProfilePost() {
 
     return (
         <View style={{ paddingTop: 25, backgroundColor: '#fff', }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                {typeData.map(item => {
-                    return (
-                        <View key={item.id} style={{ width: 196.36, paddingBottom: 15, borderBottomWidth: selected === item.id ? 1 : 0  }}>
-                            <TouchableOpacity onPress={() => setSelected(item.id)}>
-                                <Image 
-                                    style={{ tintColor: 'black', alignSelf: 'center', width: 33, height: 35 }} 
-                                    source={item.image} 
-                                />
-                            </TouchableOpacity>
-                        </View>
-                    )
-                })}
-            </View>
-            {/* {selected ==1 && (
-                <FlatList 
-                    data={UserData} 
-                    renderItem={renderItem} 
-                    keyExtractor={item => item.id.toString()} 
-                    numColumns={3} 
-                    showsHorizontalScrollIndicator= {false}
-                />
-            )} */}
+           
             
             <View style= {{marginLeft: 4, marginTop: 5}}>
                 {selected === 1 && (
@@ -95,7 +73,10 @@ function ProfilePost() {
                                 <Image style={{ height: 130, width: 132, marginBottom: 3, marginRight: 3}} source={{ uri: item.image }} />
                             </TouchableOpacity>
                         )}
-                        keyExtractor={(item) => item.idPost.toString()}
+                        keyExtractor={
+                            // (item) => item.idPost.toString()
+                            (item) => item._id
+                        }
                         numColumns={3}
                         showsHorizontalScrollIndicator={false}
                     />
