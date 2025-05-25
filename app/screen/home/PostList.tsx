@@ -153,20 +153,19 @@ function PostList() {
         const response = await getAllPost();
         const posts = response.data;
 
+        console.log("------------------POST-----------------");
+        console.log("FETCH POSTS: ", posts)
         // const postsWithUser = [];
 
-        console.log("------------------POST-----------------");
-        console.log(posts);
 
         console.log("------------------POST DETAILS-----------------");
         for (const post of posts) {
-          const userResponse = await getOneUserById({ idUser: post.idUser });
-          const user = userResponse.data;
-          const cmtResponse = await getAllCommentWithIdPost({ idPost:  post.idPost});
-
+          // const userResponse = await getOneUserById({ idUser: post.idUser });
+          // const user = userResponse.data;
+          const cmtResponse = await getAllCommentWithIdPost({ idPost:  post._id});
 
           const postUser = {
-            idPost: post.idPost,
+            idPost: post._id,
             image: post.image,
             likes: post.likes,
             // number_of_comments: post.number_of_comments,
@@ -177,11 +176,11 @@ function PostList() {
             created_at: formatDistanceToNow(new Date(post.created_at), { addSuffix: true }),
 
             idUser: post.idUser,
-            name: user.name,
-            avatar: user.avatar,
+            name: post.user.name,
+            avatar: post.user.avatar,
             isLiked: false, // thêm
             likesCount: post.likes, // thêm
-          };
+          }; 
 
           postsWithUser.push(postUser);
         }

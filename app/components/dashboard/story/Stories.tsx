@@ -23,7 +23,7 @@ type Story = {
     image: string;
     content: string;
     created_at: string;
-    idUser: number;
+    idUser: string;
     name: string;
     avatar: string;
 }
@@ -64,148 +64,119 @@ const Stories: React.FC<StoriesProps> = () => {
     console.log("User Avatar: ", avatar);
 
     const [stories, setStories] = useState<Story[]>([]);
-        //const [storyData, setStoryData] = useState<any[]>([]);
        
-       
-        // const storiesWithUser:
-        // {       
-        //     idStory: any;
-        //     image: any;
-        //     content: any;
-        //     created_at: any;
-        //     idUser: any;
-        //     name: any;
-        //     avatar: any;
-        //   }[] = [];
+    // useEffect(() => {
+    //     const unsubscribe = navigation.addListener('focus', () => {
+    //     const fetchStories = async () => {
+    //         try {
+    //             const res = await getAllStory();
+    //             const stories = res.data;
 
-    
-    // useFocusEffect(
-    //     useCallback(() => {
-    //     // useEffect(() => {
-    //         const fetchStories = async () => {
-    //             try {
-    //                 const res = await getAllStory();
-    //                 // const fetchedStories: Story[] = res.data;
-    //                 // console.log("------- FETCHED STORY: ",fetchStories);
-    
-    
-    //                 const stories = res.data;
-    //                 const storiesWithUser:
-    //                 {       
-    //                     idStory: any;
-    //                     image: any;
-    //                     content: any;
-    //                     created_at: any;
-    //                     idUser: any;
-    //                     name: any;
-    //                     avatar: any;
-    //                 }[] = [];
-    //                 console.log("------------------STORIES-----------------");
-    //                 console.log(stories);
-    
-    //                 console.log("------------------STORY DETAILS-----------------");
-    //                     for (const story of stories) {
-    //                         const storyResponse = await getOneUserById({ idUser: story.idUser });
-    //                         const user = storyResponse.data;
-                    
-    //                         const storyUser = {
-    //                             idStory: story.idStory,
-    //                             image: story.image,
-    //                             content: story.content,
-    //                             created_at: formatDistanceToNow(new Date(story.created_at), { addSuffix: true }),
-    //                             idUser: story.idUser,
-    //                             name: user.name,
-    //                             avatar: user.avatar,
-    //                           };
-                    
-    //                         storiesWithUser.push(storyUser);
-    //                 }
-    //                 console.log("✅ Stories with user info:", storiesWithUser);
-    //                 setStories(storiesWithUser);
-    
-    //             } catch (err) {
-    //                 console.error("Lỗi khi lấy stories:", err);
+    //             console.log("FETCH STORIES:", res.data)
+
+    //             const storiesWithUser = await Promise.all(
+    //                 stories.map(async (story: any) => {
+    //                     const storyResponse = await getOneUserById({ idUser: story.user._id });
+    //                     const user = storyResponse.data;
+
+    //                     return {
+    //                     idStory: story._id,
+    //                     image: story.image,
+    //                     content: story.content,
+    //                     created_at: formatDistanceToNow(new Date(story.created_at), { addSuffix: true }),
+    //                     idUser: story.user._id,
+    //                     name: user.name,
+    //                     avatar: user.avatar,
+    //                     };
+    //                 })
+    //             );
+
+    //             // const storiesWithUserSorted = storiesWithUser.sort((a, b) => {
+    //             // if (a.idUser === idUser) return -1;
+    //             // if (b.idUser === idUser) return 1;
+    //             //     return 0;
+    //             // });
+
+    //             // setStories(storiesWithUserSorted);
+
+    //             // Kiểm tra xem người dùng hiện tại có story không
+    //             const hasMyStory = storiesWithUser.some(story => story.user._id === idUser);
+
+    //             let finalStories = storiesWithUser;
+
+    //             if (!hasMyStory) {
+    //             // Thêm avatar riêng của mình vào đầu danh sách
+    //             finalStories = [{
+    //                 idStory: -1, // ID giả
+    //                 image: '',
+    //                 content: '',
+    //                 created_at: '',
+    //                 idUser: idUser,
+    //                 name: 'You',
+    //                 avatar: avatar, // từ useUserData hoặc useUser
+    //             }, ...storiesWithUser];
+    //             } else {
+    //             // Sắp xếp để đẩy lên đầu nếu có
+    //             finalStories = storiesWithUser.sort((a, b) => {
+    //                 if (a.idUser === idUser) return -1;
+    //                 if (b.idUser === idUser) return 1;
+    //                 return 0;
+    //             });
     //             }
-    //         };
-    //         fetchStories();
-    // }, [])
-    // );
 
-    useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
-        const fetchStories = async () => {
-            try {
-                const res = await getAllStory();
-                const stories = res.data;
+    //             setStories(finalStories);
+                
 
-                const storiesWithUser = await Promise.all(
-                    stories.map(async (story: any) => {
-                        const storyResponse = await getOneUserById({ idUser: story.idUser });
-                        const user = storyResponse.data;
+    //         } catch (err) {
+    //             console.error("Lỗi khi lấy storiesssssssssss:", err);
+    //         }
+    //     };
 
-                        return {
-                        idStory: story.idStory,
-                        image: story.image,
-                        content: story.content,
-                        created_at: formatDistanceToNow(new Date(story.created_at), { addSuffix: true }),
-                        idUser: story.idUser,
-                        name: user.name,
-                        avatar: user.avatar,
-                        };
-                    })
-                );
+    //     fetchStories();
+    // });
 
-                // const storiesWithUserSorted = storiesWithUser.sort((a, b) => {
-                // if (a.idUser === idUser) return -1;
-                // if (b.idUser === idUser) return 1;
-                //     return 0;
-                // });
-
-                // setStories(storiesWithUserSorted);
-
-                // Kiểm tra xem người dùng hiện tại có story không
-                const hasMyStory = storiesWithUser.some(story => story.idUser === idUser);
-
-                let finalStories = storiesWithUser;
-
-                if (!hasMyStory) {
-                // Thêm avatar riêng của mình vào đầu danh sách
-                finalStories = [{
-                    idStory: -1, // ID giả
-                    image: '',
-                    content: '',
-                    created_at: '',
-                    idUser: idUser,
-                    name: 'You',
-                    avatar: avatar, // từ useUserData hoặc useUser
-                }, ...storiesWithUser];
-                } else {
-                // Sắp xếp để đẩy lên đầu nếu có
-                finalStories = storiesWithUser.sort((a, b) => {
-                    if (a.idUser === idUser) return -1;
-                    if (b.idUser === idUser) return 1;
-                    return 0;
-                });
-                }
-
-                setStories(finalStories);
-
-            } catch (err) {
-                console.error("Lỗi khi lấy stories:", err);
-            }
-        };
-
-        fetchStories();
-    });
-
-    return unsubscribe; // cleanup
-    }, [navigation]);
+    // return unsubscribe; // cleanup
+    // }, [navigation]);
 
 
     // const storiesSelect= () => {
     //     console.log("WHEN CLICK ANY STORY");
     //     console.log(stories);
     // }
+
+    useEffect(() => {
+    const fetchStories = async () => {
+        try {
+        const res = await getAllStory();
+        //console.log("FETCH STORIES:", res.data);
+
+        const stories = res.data;
+
+        const storiesWithUser = stories.map((story: any) => {
+            return {
+            idStory: story._id,
+            image: story.image,
+            content: story.content,
+            created_at: formatDistanceToNow(new Date(story.created_at), { addSuffix: true }),
+            idUser: story.user._id,
+            name: story.user.name,
+            avatar: story.user.avatar,
+            };
+        });
+
+        setStories(storiesWithUser);
+        //console.log("FETCH STORIES FINAL:", storiesWithUser);
+
+        } catch (err) {
+        console.log("Lỗi khi lấy storiesssssssssss:", err);
+        }
+    };
+
+    fetchStories();
+    }, []);
+
+
+    //console.log("FETCH STORIES WITH ALL USERS: ", stories)
 
     return (
         <View style= {{flexDirection: 'row', marginTop: 8, backgroundColor: '#fff'}}>

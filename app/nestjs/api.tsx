@@ -7,7 +7,7 @@ import axios from 'axios';
 //const API_URL = "http://192.168.1.168:3000/"; // anh kafe
 // const API_URL = "http://192.168.11.149:3000/"; 
 
-const API_URL = "http://192.168.1.92:3000/";
+const API_URL = "http://192.168.1.241:3000/";
 
 
 // ===== USER =====
@@ -52,7 +52,7 @@ export const getAllPost = async () => {
 }
 
 export const addPost = async (data: { description: string; image: string; tags: string; user: string }) => {
-  return await axios.post(`${API_URL}api/v2/posts/`, data);
+  return await axios.post(`${API_URL}api/v2/posts/post`, data);
 }
 
 export const updatePost = async (data: { id: string, likes: number }) => {
@@ -75,7 +75,7 @@ export const getAllStory = async () => {
 }
 
 export const addStory = async (data: { content: string; image: string; user: string }) => {
-  return await axios.post(`${API_URL}api/v2/stories/`, data);
+  return await axios.post(`${API_URL}api/v2/stories/story`, data);
 }
 
 
@@ -84,8 +84,11 @@ export const addComment = async (data: { comment: string; post: string; user: st
   return await axios.post(`${API_URL}api/v2/comments/`, data);
 }
 
-export const getAllCommentWithIdPost = async (data: { post: string }) => {
-  return await axios.get(`${API_URL}api/v2/comments?postId=${data.post}`);
+// export const getAllCommentWithIdPost = async (data: { idPost: string }) => {
+//   return await axios.get(`${API_URL}api/v2/comments?postId=${data.idPost}`);
+// }
+export const getAllCommentWithIdPost = async (data: { idPost: string }) => {
+  return await axios.get(`${API_URL}api/v2/comments/${data.idPost}`);
 }
 
 
