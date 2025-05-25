@@ -171,3 +171,13 @@ export const deleteProduct = async (id: string) => {
   return await axios.delete(`${API_URL}api/v2/products/${id}`);
 };
 
+
+
+//= = = =  Messages = = = =
+export const getMessages = async (idUser_1: any, idUser_2: any) => {
+  return await axios.get(`${API_URL}api/v2/messages/conversations/${idUser_1}/${idUser_2}`)
+}
+
+export const getConversations = async (idUser: any) => {
+  return await axios.get(`${API_URL}api/v2/messages/conversations/${idUser}`)
+}

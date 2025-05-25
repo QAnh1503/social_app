@@ -14,16 +14,18 @@ const styles = StyleSheet.create({
 });
 
 
-function UserProfileSearch() {
+function UserProfileSearch({route}) {
  
  
   console.log("user profile search");
+  const user = route.params.user;
+  console.log('profile search', user._id)
 
 
   return (
     <View style= {{flex: 1, backgroundColor: "#fff"}}>
       <ProfileHeaderSearch/>
-      <ProfileDetailsSearch/>
+      <ProfileDetailsSearch profile={user}/>
       <ProfilePostSearch/>
     </View>
   );

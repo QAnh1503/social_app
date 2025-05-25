@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 export type MessageItemType = {
-  id: string;
   text: string;
   isSent: boolean;
   timestamp?: string;
@@ -12,18 +11,18 @@ type MessageItemProps = {
   message: MessageItemType;
 };
 
-export default function MessageItem({ message }: MessageItemProps) {
+export default function MessageItem({text, isSent, timestamp }: MessageItemType) {
   return (
     <View style={styles.messageWrapper}>
       <View style={[
         styles.message,
-        message.isSent ? styles.sentMessage : styles.receivedMessage
+        isSent ? styles.sentMessage : styles.receivedMessage
       ]}>
         <Text style={[
           styles.messageText,
-          message.isSent ? styles.sentMessageText : styles.receivedMessageText
+          isSent ? styles.sentMessageText : styles.receivedMessageText
         ]}>
-          {message.text}
+          {text}
         </Text>
       </View>
     </View>

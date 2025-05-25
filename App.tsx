@@ -56,7 +56,7 @@ function App() {
       </UserProvider>
       
       {/* <Register/> */}
-    </SafeAreaView>
+     </SafeAreaView>
   );
 }
 
