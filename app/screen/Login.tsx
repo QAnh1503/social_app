@@ -103,7 +103,7 @@ export default function Login() {
             const res = await loginUser({ email, password });
             // const res1= await loginUserID()
             console.log('Login success:', res.data);
-            console.log('User ID from API:', res.data.user?.idUser);
+            console.log('User ID from API:', res.data._id);
 
             // Nếu cần lưu token hoặc user info:
             // await AsyncStorage.setItem('token', res.data.token);
@@ -111,12 +111,12 @@ export default function Login() {
             // const { setEmail } = useUser();
             // setEmail(email); // set context
             setContextEmail(email);
-            setIdUser(res.data.user.idUser); // <== Lưu idUser vào context
-            setAvatar(res.data.user.avatar);
-            setName(res.data.user.name);
-            setFollowing(res.data.user.following);
-            setFollowers(res.data.user.followers);
-            setPosts(res.data.user.posts);
+            setIdUser(res.data._id); // <== Lưu idUser vào context
+            setAvatar(res.data.avatar);
+            setName(res.data.name);
+            setFollowing(res.data.following);
+            setFollowers(res.data.followers);
+            setPosts(res.data.posts);
 
             navigation.navigate('Dashboard');
 
