@@ -15,8 +15,8 @@ import { StackNavigationProp } from "@react-navigation/stack";
 
 
 type UserFollowerDetail = {
-    idFollower: number,
-    idUserFollower: number,
+    idFollower: string,
+    idUserFollower: string,
     nameFollower: string;
     avatarFollower: string;
     //idUser: number;
@@ -36,7 +36,7 @@ function Followers() {
     useEffect(() => {
         const userRecent = async () => {
             try {
-                const res = await getOneUserById({ idUser });
+                const res = await getOneUserById({ user: idUser });
                 setNameUserRecent(res.data.name);
                 console.log("User Name: ", res.data.name); // log đúng thời điểm
             } catch (error) {
@@ -75,31 +75,36 @@ function Followers() {
     useEffect(() => {
         const fetchFollowers = async () => {
             try {
-                const response = await getAllFollowersWithIdUser({idUser});
+                //console.log("aaaaaaaaaaaaaaaaaa")
+                const response = await getAllFollowersWithIdUser({user: idUser});
                 
                 const followersList = response.data
-                //console.log("Fetched followers list:", followersList);
+                //console.log("Fetched followers listtttttttttttt:", followersList);
 
                 //console.log("------------------FOLLOWER DETAILS-----------------");
                 for (const follower of followersList) {
-                    const userResponse = await getOneUserById({ idUser: follower.idUserFollower });
-                    const user_follower = userResponse.data;
-
+                    // const userResponse = await getOneUserById({ user: follower.userFollower });
+                    // const user_follower = userResponse.data;
+                    // console.log("user_follower: ",user_follower)
                     const userFollower = {
-                        idFollower: follower.idFollower,
-                        idUserFollower: follower.idUserFollower,
-                        nameFollower: user_follower.name,
-                        avatarFollower: user_follower.avatar,
+                        idFollower: follower._id,
+                        idUserFollower: follower.userFollower._id,
+                        // nameFollower: user_follower.name,
+                        // avatarFollower: user_follower.avatar,
+                        nameFollower: follower.userFollower.name,
+                        avatarFollower: follower.userFollower.avatar,
                         //idUser: user_follower.idUser,
                     };
 
                     followersWithUserFollowerDetail.push(userFollower);
+                    // console.log("aaaaaaaaaaaaaaaaa")
                 }
                 //console.log("✅ Followers with user info:", followersWithUserFollowerDetail);
                 setFollowers(followersWithUserFollowerDetail);
+                console.log("FETCH FOLLOWER",followers)
 
             } catch (error) {
-                console.error("Failed to fetch posts:", error);
+                console.error("Failed to fetch followers w id user:", error);
             }
         };
         fetchFollowers();
@@ -124,10 +129,16 @@ function Followers() {
             const updatedFollowers = await Promise.all(
                 followers.map(async (item) => {
                     try {
+                        console.log("Checking follow status for:", {
+                            idUser: idUser,
+                            idUserFollowing: item.idUserFollower,
+                        });
+
                         const res = await checkIdUser_IdUserFollowing({
                             idUser: idUser,  // người được theo dõi
                             idUserFollowing: item.idUserFollower, // người đang theo dõi
                         });
+                        console.log("abcbkasbkajb")
                         return { ...item, followed: res.data.exists };
                     } catch (err) {
                         console.error("Error checking follow status", err);
@@ -278,8 +289,8 @@ function Followers() {
                                                 // Nếu chưa theo dõi → nhấn sẽ theo dõi
                                             try {
                                                 await addFollowing({
-                                                    idUser,
-                                                    idUserFollowing: item.idUserFollower,
+                                                    user: idUser,
+                                                    userFollowing: item.idUserFollower,
                                                     nameUserFollowing: item.nameFollower, 
                                                 });
                                                 console.log("ADD FOLLOWING SUCCESSFULLY!");

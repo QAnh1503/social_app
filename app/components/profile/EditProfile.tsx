@@ -3,10 +3,10 @@ import { SafeAreaView, StyleSheet, TextInput, TouchableOpacity } from "react-nat
 import { View, Platform, Text, Image } from 'react-native';
 import { useUser } from "../../screen/UserContext";
 import { getOneUserById, loginUser, updateAvatar, updateUserProfile } from "../../nestjs/api";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import * as ImagePicker from 'expo-image-picker';
-import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { NavigationProp, useFocusEffect, useNavigation } from "@react-navigation/native";
 
 
 const styles = StyleSheet.create({
@@ -25,7 +25,28 @@ function EditProfile() {
     const { email } = useUser();
     const { name } = useUser();
     const { avatar } = useUser();
-  
+    const [websiteFirst, setWebsiteFirst] = useState('');
+    const [bioFirst, setBioFirst] = useState('');
+    const [phoneFirst, setPhoneFirst] = useState('');
+    const [genderFirst, setGenderFirst] = useState('');
+
+
+    useEffect(() => {
+        const fetchUser  = async () => {
+        try {
+            const response = await getOneUserById({ user: idUser });
+            //console.log('User data:', response.data);
+            setWebsiteFirst(response.data.website);
+            setBioFirst(response.data.bio);
+            setPhoneFirst(response.data.phone);
+            setGenderFirst(response.data.gender);
+        } catch (error) {
+            console.error('Error fetching user:', error);
+        }
+        };
+        fetchUser();
+    }, []);
+
     
     // ============================= IMAGE =============================
     const [image, setImage] = useState<string | null>(null);
@@ -66,62 +87,58 @@ function EditProfile() {
     };
 
     const [avatarr, setAvatar] = useState('');
+
     // useEffect(() => {
     //     const unsubscribe = navigation.addListener('focus', () => {
-    //         const fetchStories = async () => {
+    //             console.log("📌 Navigation focus triggered"); // 👈 kiểm tra event này có chạy không
+
+    //     const fetchStories = async () => {
     //         try {
-                
-    //                 const storyResponse = await getOneUserById({ idUser });
-    //                 const user = storyResponse.data;
-    //                 setAvatar(user.avatar)
-    //                 // return {
-    //                 // idStory: story.idStory,
-    //                 // image: story.image,
-    //                 // content: story.content,
-    //                 // created_at: formatDistanceToNow(new Date(story.created_at), { addSuffix: true }),
-    //                 // idUser: story.idUser,
-    //                 // name: user.name,
-    //                 // avatar: user.avatar,
-    //                 // };
-    //             }
-    //             // );
+    //             const storyResponse = await getOneUserById({ user: idUser });
+    //             const user = storyResponse.data;
+    //             console.log("📦 Full user object: ", user);
+    //             console.log("📷 Avatar inside user: ", user.avatar);
+    //             setAvatar(user.avatar)                
+    //         } catch (err) {
+    //             console.error("Lỗi khi lấy stories:", err);
+    //         }
+    //     };
     
-    //             // setStories(storiesWithUser);
-            
-    //         catch (err) {
-    //             console.error("Lỗi khi lấy img user:", err);
-    //         }
-    //         }
-    //     }
-    //     )
-    // })
-    useEffect(() => {
-            const unsubscribe = navigation.addListener('focus', () => {
-            const fetchStories = async () => {
-            try {
-                const storyResponse = await getOneUserById({ idUser });
-                const user = storyResponse.data;
-                console.log("hello: "+user.avatar)
-                setAvatar(user.avatar)                
-            } catch (err) {
-                console.error("Lỗi khi lấy stories:", err);
-            }
+    //     fetchStories();
+    //   });
+    
+    //   return unsubscribe; // cleanup
+    // }, [navigation]);
+   
+    useFocusEffect(
+    useCallback(() => {
+        console.log("📌 useFocusEffect triggered"); // dòng này sẽ xuất hiện nếu chạy OK
+
+        const fetchStories = async () => {
+        try {
+            console.log("⚠️ idUser:", idUser);
+            const storyResponse = await getOneUserById({ user: idUser });
+            const user = storyResponse.data;
+            console.log("👤 User avatar:", user.avatar);
+            setAvatar(user.avatar || '');
+        } catch (err) {
+            console.error("❌ Lỗi khi lấy stories:", err);
+        }
         };
-    
+
         fetchStories();
-      });
-    
-      return unsubscribe; // cleanup
-    }, [navigation]);
+    }, [avatarr]) 
+    );
+    console.log("AVT: ", avatarr)
     
     // ============================= UPDATE =============================
     const [namee, setName] = useState(name);
     const [emaill, setEmail] = useState(email);
     // const [avatarr, setAvatar] = useState(avatar);
-    const [websitee, setWebsite] = useState('');
-    const [bioo, setBio] = useState('');
-    const [phonee, setPhone] = useState('');
-    const [genderr, setGender] = useState('');
+    const [websitee, setWebsite] = useState(websiteFirst);
+    const [bioo, setBio] = useState(bioFirst);
+    const [phonee, setPhone] = useState(phoneFirst);
+    const [genderr, setGender] = useState(genderFirst);
 
     const updateProfileUser = async () => {
         console.log("User ID: ", idUser);
@@ -154,6 +171,14 @@ function EditProfile() {
             console.error('Register failed:', err?.response?.data || err.message);
         }
     }
+
+    useEffect(() => {
+        setWebsite(websiteFirst);
+        setBio(bioFirst)
+        setPhone(phoneFirst)
+        setGender(genderFirst)
+    },);
+
 
     return (
         <View style={{ paddingHorizontal: 15 , backgroundColor: "#fff", flex: 1, alignItems: "center"}}>
@@ -214,8 +239,8 @@ function EditProfile() {
                         {/* <Text style= {{fontSize: 18, color: '#ccc',}}>Website</Text> */}
                         <TextInput
                             style= {{fontSize: 18, color: '#000',}}
-                            placeholder={ websitee!=='' ? websitee : "Website"}
-                            placeholderTextColor={websitee === '' ? '#999' : '#000'}
+                            placeholder="Website"
+                            placeholderTextColor='#999'
                             value={websitee}
                             onChangeText={setWebsite}
                         />

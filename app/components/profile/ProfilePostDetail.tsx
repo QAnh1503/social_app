@@ -311,12 +311,11 @@ function ProfilePostDetail() {
                                 <Text style= {{fontSize: 18, marginLeft: 2, fontWeight: 500, marginRight: 5, color: "#999"}}>
                                     in {selectedItem.tags}
                                 </Text>
-                                <TouchableOpacity style= {{backgroundColor: "#000", borderRadius: 10, right: 0, position: "absolute"}}>
+                                {/* <TouchableOpacity style= {{backgroundColor: "#000", borderRadius: 10, right: 0, position: "absolute"}}>
                                     <Text style= {{color: "#fff", padding: 7, paddingHorizontal: 15, fontSize: 17}}>Follow</Text>
-                                </TouchableOpacity>
+                                </TouchableOpacity> */}
                             </View>
                             <Text style= {{color: "#ccc", fontSize: 16, marginLeft: 15}}>{create_atPost}</Text>
-                            {/* <Text style= {{color: "#ccc", fontSize: 17, marginLeft: 18, fontFamily: "serif",}}>What's News ?</Text> */}
                         </View>
                     </View>
                 </View>
