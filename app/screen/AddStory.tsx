@@ -79,11 +79,10 @@ const AddStory = () => {
 
         const imagee= image+'';
         try {
-            
             const res = await addStory({
                 content,
                 image: imagee,
-                idUser 
+                user: idUser 
             });
             console.log("Add Story successfully !", res.data);
             navigation.navigate("Dashboard");

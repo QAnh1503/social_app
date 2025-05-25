@@ -38,18 +38,18 @@ function ProfileDetails() {
     console.log("User Posts: ", posts);
 
     const [avtUser, setAvtUser] = useState(avatar);
-    const avatarUser = async () => {
-        try {
-            const storyResponse = await getOneUserById({ idUser: idUser });
-            const user = storyResponse.data;
-            const avtUserr= user.avatar;
-            console.log("✅ AVATAR USER: ", avtUserr);
-            setAvtUser(avtUserr);
+    // const avatarUser = async () => {
+    //     try {
+    //         const storyResponse = await getOneUserById({ idUser: idUser });
+    //         const user = storyResponse.data;
+    //         const avtUserr= user.avatar;
+    //         console.log("✅ AVATAR USER: ", avtUserr);
+    //         setAvtUser(avtUserr);
     
-        } catch (err) {
-            console.error("Lỗi khi lấy stories:", err);
-        }
-    }
+    //     } catch (err) {
+    //         console.error("Lỗi khi lấy stories:", err);
+    //     }
+    // }
     useFocusEffect(
     useCallback(() => {
         const fetchUserAvatar = async () => {
@@ -67,8 +67,7 @@ function ProfileDetails() {
     }, []) // không cần idUser nếu nó không thay đổi
     );
 
-    // const imgPath = "../../../assets/images/userAvatar/"+avatarUser;
-    // console.log(imgPath);
+  
 
     // ============================= IMAGE =============================
     const [image, setImage] = useState<string | null>(null);
@@ -117,33 +116,33 @@ function ProfileDetails() {
     // ============================= NUMBER OF FOLLOWER, FOLLOWING, POSTS =============================
     const [numFollowers, setNumFollower]= useState(0);
     const [numFollowing, setNumFollowing]= useState(0);
-    useEffect(() => {
-        const fetchNumFollow = async () => {
-            try {
-                const response1 = await getAllFollowersWithIdUser({idUser});
-                const response2 = await getAllFollowingWithIdUser({idUser});
+    // useEffect(() => {
+    //     const fetchNumFollow = async () => {
+    //         try {
+    //             const response1 = await getAllFollowersWithIdUser({idUser});
+    //             const response2 = await getAllFollowingWithIdUser({idUser});
 
-                setNumFollower(response1.data.length);
-                setNumFollowing(response2.data.length);
-                } catch (error) {
-                    console.error("Failed to fetch followers:", error);
-                }
-            };
-            fetchNumFollow();
-    }, []);
+    //             setNumFollower(response1.data.length);
+    //             setNumFollowing(response2.data.length);
+    //             } catch (error) {
+    //                 console.error("Failed to fetch followers:", error);
+    //             }
+    //         };
+    //         fetchNumFollow();
+    // }, []);
     const [numPosts, setNumPosts] = useState(0);
-        useEffect(() => {
-            const fetchNumPosts = async () => {
-                try {
-                    const response = await getAllPostWithIdUser({idUser});
-                    setNumPosts(response.data.length); 
-                } catch (error) {
-                    console.error("Failed to fetch posts:", error);
-                }
-            };
+    //     useEffect(() => {
+    //         const fetchNumPosts = async () => {
+    //             try {
+    //                 const response = await getAllPostWithIdUser({idUser});
+    //                 setNumPosts(response.data.length); 
+    //             } catch (error) {
+    //                 console.error("Failed to fetch posts:", error);
+    //             }
+    //         };
     
-            fetchNumPosts();
-    }, []);
+    //         fetchNumPosts();
+    // }, []);
 
     return (
         <View style={{ paddingHorizontal: 15 , paddingTop: 20, backgroundColor: '#fff',}}>

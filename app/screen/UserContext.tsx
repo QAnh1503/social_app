@@ -3,8 +3,12 @@ import React, { createContext, useState, useContext } from 'react';
 type UserContextType = {
     email: string;
     setEmail: (email: string) => void;
-    idUser: number;
-    setIdUser: (id: number) => void;
+    // idUser: number;
+    // setIdUser: (id: number) => void;
+    //MONGO
+    idUser: string;
+    setIdUser: (id: string) => void;
+
     avatar: string;
     setAvatar: (avatar: string) => void;
     name: string;
@@ -22,12 +26,14 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     const [email, setEmail] = useState('');
-    const [idUser, setIdUser] = useState(0); 
+    // const [idUser, setIdUser] = useState(0); 
     const [avatar, setAvatar] = useState(''); 
     const [name, setName] = useState('');
     const [following, setFollowing] = useState(0);
     const [followers, setFollowers] = useState(0);
     const [posts, setPosts] = useState(0);
+    // MONGO
+    const [idUser, setIdUser] = useState(''); 
 
 
     return (
