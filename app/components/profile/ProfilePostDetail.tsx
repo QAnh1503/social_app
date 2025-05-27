@@ -26,21 +26,6 @@ import LikeIcon from "../../../assets/images/home/likeIcon.svg";
 import LikedIcon from "../../../assets/images/home/likedIcon.svg";
 import CommentIcon from "../../../assets/images/home/commentIcon.svg";
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  statButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-    padding: 5,
-  },
-  statText: {
-    color: "#000",
-  },
-});
 
 
 type CommentUser = {
@@ -61,33 +46,29 @@ function ProfilePostDetail() {
     console.log(idUserRecent);
 
     // ----------- GET NAMERECENT, AVTRECENT FROM IDUSER -------------------
-    // useFocusEffect(
-    //     useCallback(() => {
-    //     const fetchUserRecent = async () => {
-    //         try {
-    //         // Giả sử selectedItem được truyền từ props hoặc state
-    //         const res = await getOneUserById({ idUser: idUserRecent });
-    //         const user = res.data;
+    useFocusEffect(
+        useCallback(() => {
+        const fetchUserRecent = async () => {
+            try {
+            // Giả sử selectedItem được truyền từ props hoặc state
+            const res = await getOneUserById({ user: idUserRecent });
+            const user = res.data;
 
-    //         const userRecent = {
-    //             name: user.name,
-    //             avatar: user.avatar,
-    //         };
-    //         setNameRecent(user.name);
-    //         setAvtRecent(user.avatar);
-    //         console.log("AVATAR USER RECENT: "+user.avatar)
-    //         console.log("NAME USER RECENT: "+user.name)
-          
-    //         } catch (err) {
-    //         console.error("Lỗi khi lấy user recent:", err);
-    //         }
-    //     };
+            const userRecent = {
+                name: user.name,
+                avatar: user.avatar,
+            };
+            setNameRecent(user.name);
+            setAvtRecent(user.avatar);
+            } catch (err) {
+            console.error("Lỗi khi lấy user recent:", err);
+            }
+        };
 
-    //     fetchUserRecent(); // Đừng quên gọi hàm      
-    //     }, [idUserRecent]) // thêm dependency để tránh warning
-    // );
-    console.log("---------------------------------------------------------------")
-    console.log("")
+        fetchUserRecent();   
+        }, [idUserRecent]) 
+    );
+    
 
     // ----------- INFORMATION OF EACH POST -------------------
     const navigation: NavigationProp<RootStackParamList> = useNavigation();
@@ -115,69 +96,7 @@ function ProfilePostDetail() {
         addSuffix: true,
     });
     console.log(create_atPost);
-    console.log("---------------------------------------------------------------")
-    console.log("")
-
-
-    // const [name, setName] = useState('')
-    // const [avatar, setAvatar] = useState('')
-    // ----------- GET NAME, AVATAR USER WITH IDUSER(ID FROM EACH POST) -------------------
-    // useFocusEffect(
-    //     useCallback(() => {
-    //     const fetchStories = async () => {
-    //         try {
-    //         // Giả sử selectedItem được truyền từ props hoặc state
-    //         const res = await getOneUserById({ idUser: selectedItem.idUser });
-    //         const user = res.data;
-
-    //         const storyUser = {
-    //             name: user.name,
-    //             avatar: user.avatar,
-    //         };
-    //         setName(user.name);
-    //         setAvatar(user.avatar);
-    //         //   console.log("with user info:", storyUser);
-    //         console.log("AVATAR USER: "+user.avatar)
-    //         console.log("NAME USER: "+user.name)
-    //         console.log("---------------------------------------------------------------")
-    //         console.log("")
-    //         } catch (err) {
-    //         console.error("Lỗi khi lấy stories:", err);
-    //         }
-    //     };
-
-    //     fetchStories(); // Đừng quên gọi hàm      
-    //     }, [selectedItem.idUser]) // thêm dependency để tránh warning
-    // );
-    
-    
-
-    // ----------- GET ALL COMMENTS WITH IDPOST -------------------
-    // useFocusEffect(
-    //     useCallback(() => {
-    //     const fetchCmtDetails = async () => {
-    //         try {
-    //             const res = await getAllCommentWithIdPost({idPost: selectedItem.idPost})
-    //             const cmtPost= res.data;
-    //             console.log("CMT POST: ", cmtPost);
-    //             const resUser = await getOneUserById({ idUser: cmtPost.idUser }); // id of user create comment
-    //             const cmtUser= {
-    //                 idPost: cmtPost.idPost,
-    //                 comment: cmtPost.comment,
-    //                 created_at: formatDistanceToNow(new Date(cmtPost.created_at), { addSuffix: true }),
-    //                 idUser: cmtPost.idUser, // id of user create comment
-    //                 name: resUser.data.name,
-    //                 avatar: resUser.data.avatar,
-    //             }
-    //         } catch (err) {
-    //         console.error("Lỗi khi lấy Cmt Details:", err);
-    //         }
-    //     };
-    //     fetchCmtDetails(); // Đừng quên gọi hàm      
-    //     }, 
-    //     )
-    // );
-
+  
     // ----------- UPLOAD COMMENT WITH COMMENT, IDPOST, IDUSER -------------------
     const [cmtsUser, setCmtsUser] = useState<CommentUser[]>([]);
         const cmtsWithUser:
@@ -232,7 +151,7 @@ function ProfilePostDetail() {
             const res = await addComment({ 
                 comment,
                 idPost: selectedItem._id,
-                user: idUser
+                idUser: idUser
             });
                 console.log("UPLOAD COMMENT SUCCESSFULLY !")
                 setComment('')
@@ -244,14 +163,13 @@ function ProfilePostDetail() {
                     number_of_comments: cmtsUser.length + 1
                 });
             } catch (err) {
-            console.error("Lỗi khi lấy stories:", err);
+            console.error("Lỗi khi upload cmt:", err);
         }
     };
 
     // ------------------- HANDLE LIKES ------------------------
     const [isLiked, setIsLiked] = useState(false); // Mặc định là chưa like
     const [likeCount, setLikeCount] = useState(selectedItem.likes); // Thêm state đếm like
-
     const handleLike = async (postId: string) => {
         let newLikeCount = likeCount;
 
@@ -277,7 +195,7 @@ function ProfilePostDetail() {
     return (
         <ScrollView 
             ref={scrollViewRef}
-            style={{ paddingTop: 15, backgroundColor: "#fff" , flex: 1}}>
+            style={styles.scrlview}>
             {/* ======  HEADER ====== */}
             <View style={{ flexDirection: "row", position: "relative", height: 50}}>
                 <TouchableOpacity 
@@ -414,18 +332,7 @@ function ProfilePostDetail() {
             {/* ===== TEXT INPUT COMMENT ===== */}
             <View style= {{backgroundColor: "#f5f5f5",  marginHorizontal: 13, borderRadius: 25, marginTop: 70, marginBottom: 30}}>
                 <View style= {{flexDirection: "row", alignItems: "center", position :"relative"}}>
-                    <View style={{
-                        height: 51, // 45 (image) + 2 * 3 (border)
-                        width: 51,
-                        borderRadius: 50,
-                        borderWidth: 2.5,
-                        borderColor: "#f08080",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        marginLeft: 9,
-                        position: "absolute",
-                        top: 10
-                        }}>
+                    <View style={styles.viewAvtTxtInput}>
                         <Image
                             style={{ height: 39, width: 39, borderRadius: 50,}}
                             source={{uri: avtRecent}}
@@ -436,12 +343,10 @@ function ProfilePostDetail() {
                             {nameRecent}
                         </Text>
                         <TextInput
-                            //onChangeText={handleDescriptionChange}
                             value={comment} // thêm dòng này để TextInput sync với state
                             onChangeText= {setComment}
                             style={{ marginLeft: 10, fontSize: 15 ,maxWidth: 320,}}
                             placeholder="Add a few Vibes here:"
-                            
                             placeholderTextColor="#ccc"
                             multiline
                             numberOfLines={3}
@@ -450,9 +355,9 @@ function ProfilePostDetail() {
                     </View>
                     <TouchableOpacity 
                         onPress={upLoatCmt}
-                        style={{position: "absolute", right:5, top: 15}}>
+                        style={styles.touchUpload}>
                         <Image
-                            style={{ height: 39, width: 39, borderRadius: 50,}}
+                            style={styles.imgUpload}
                             source={require('../../../assets/images/image/profile_user/profile_post_detail/up-arrow.png')}
                         />
                     </TouchableOpacity>
@@ -463,3 +368,44 @@ function ProfilePostDetail() {
 }
 
 export default ProfilePostDetail;
+
+
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: "#fff",
+    },
+    statButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 5,
+        padding: 5,
+    },
+    statText: {
+        color: "#000",
+    },
+
+    scrlview: {
+        paddingTop: 15, backgroundColor: "#fff" , flex: 1
+    },
+
+    viewAvtTxtInput: {
+        height: 51, // 45 (image) + 2 * 3 (border)
+        width: 51,
+        borderRadius: 50,
+        borderWidth: 2.5,
+        borderColor: "#f08080",
+        justifyContent: "center",
+        alignItems: "center",
+        marginLeft: 9,
+        position: "absolute",
+        top: 10
+    },
+    touchUpload : {
+        position: "absolute", right:5, top: 15
+    },
+    imgUpload: {
+        height: 39, width: 39, borderRadius: 50,
+    }
+});

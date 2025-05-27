@@ -1,6 +1,6 @@
 import { SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
 
-import { View, Platform, Text, Image } from 'react-native';
+import { View, Platform, Text, Image , Share, Linking} from 'react-native';
 import { useUser } from "../../screen/UserContext";
 import { getAllFollowersWithIdUser, getAllFollowingWithIdUser, getAllPostWithIdUser, getOneUserById, loginUser, updateAvatar } from "../../nestjs/api";
 import { useCallback, useEffect, useState } from "react";
@@ -37,18 +37,7 @@ function ProfileDetails() {
     // console.log("User Posts: ", posts);
 
     const [avtUser, setAvtUser] = useState(avatar);
-    // const avatarUser = async () => {
-    //     try {
-    //         const storyResponse = await getOneUserById({ idUser: idUser });
-    //         const user = storyResponse.data;
-    //         const avtUserr= user.avatar;
-    //         console.log("✅ AVATAR USER: ", avtUserr);
-    //         setAvtUser(avtUserr);
     
-    //     } catch (err) {
-    //         console.error("Lỗi khi lấy stories:", err);
-    //     }
-    // }
     useFocusEffect(
     useCallback(() => {
         const fetchUserAvatar = async () => {
@@ -149,6 +138,27 @@ function ProfileDetails() {
             fetchNumPosts();
     }, []);
 
+
+    // =========================== SHARE PROFILE ============================
+    const onShare = async () => {
+        try {
+            const result = await Share.share({
+                message: `Check out my profile at https://vibelap.com/myprofile/id/${idUser}`,
+            });
+            // if (result.action === Share.sharedAction) {
+            //     alert('Profile shared!');
+            // } else if (result.action === Share.dismissedAction) {
+            //     alert('Share dismissed.');
+            // }
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                alert('Error: ' + error.message);
+            } else {
+                alert('An unknown error occurred.');
+            }
+        }
+    };
+
     return (
         <View style={{ paddingHorizontal: 15 , paddingTop: 20, backgroundColor: '#fff',}}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -183,7 +193,7 @@ function ProfileDetails() {
             </View>
             <Text style= {{fontSize: 18, color: 'black', fontWeight: '500', marginTop: 10}}>{name}</Text>
             <Text style= {{color: 'black'}}>React Native</Text>
-            <Text style= {{color: 'black'}}>Insta Clone</Text>
+            <Text style= {{color: 'black'}}>Nest JS</Text>
             <Text style= {{color: 'black', fontSize: 16, fontWeight: '500'}}>See translation</Text>
 
             <View style= {{flexDirection: 'row', marginTop: 13,justifyContent: 'space-between'}}>
@@ -192,7 +202,9 @@ function ProfileDetails() {
                     style= {{justifyContent: "center",alignItems: 'center', height: 40}}>
                     <Text style= {{backgroundColor: '#E1E1E1',borderRadius: 3, width: 185,paddingHorizontal: 11, paddingVertical: 6, textAlign: 'center', color: 'black'}}>Edit Profile</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style= {{justifyContent: "center",alignItems: 'center', height: 40}}>
+                <TouchableOpacity 
+                    onPress={onShare}
+                    style= {{justifyContent: "center",alignItems: 'center', height: 40}}>
                     <Text style= {{backgroundColor: '#E1E1E1',borderRadius: 3, width: 185, paddingHorizontal: 11, paddingVertical: 6, textAlign: 'center', color: 'black'}}>Share Profile</Text>
                 </TouchableOpacity>
             </View>

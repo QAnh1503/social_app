@@ -10,11 +10,12 @@ import {
 
 import { View, Platform, Text } from "react-native";
 import { useUser } from "../UserContext";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { addQues, getAllQuesWithTags, getOneUserById } from "../../nestjs/api";
 import {
   NavigationProp,
   RouteProp,
+  useFocusEffect,
   useNavigation,
   useRoute,
 } from "@react-navigation/native";
@@ -43,6 +44,24 @@ function CommunityGroupDetails() {
   // console.log("User email in UserProfile:", avatar);
   // console.log("User ID in UserProfile:", name);
   // console.log("Community Groups DETAILS");
+  const [avtUser, setAvtUser] = useState(avatar);
+      
+  useFocusEffect(
+    useCallback(() => {
+        const fetchUserAvatar = async () => {
+        try {
+            const res = await getOneUserById({ user: idUser });
+            const avt = res.data.avatar;
+            console.log("✅ Updated avatar:", avt);
+            setAvtUser(avt);
+        } catch (err) {
+            console.error("❌ Lỗi khi lấy avatar:", err);
+        }
+      };
+  
+        fetchUserAvatar();
+    }, []) 
+  );
 
 
   const getImageByTag = (tags: string) => {
@@ -193,7 +212,7 @@ function CommunityGroupDetails() {
             <View style={styles.viewAvtTextinputCmt}>
               <Image
                 style={{ height: 39, width: 39, borderRadius: 50 }}
-                source={{ uri: avatar }}
+                source={{ uri: avtUser }}
               />
             </View>
             <View style={{ maxWidth: 280, marginLeft: 60 }}>
