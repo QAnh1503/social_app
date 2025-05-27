@@ -1,16 +1,10 @@
 import {  ImageSourcePropType, SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
 
 import { View, Platform, Text, Image , FlatList} from 'react-native';
-// import { typeData, UserData } from "../../../utils/UserData";
 import { useEffect, useState } from "react";
-// import { typeData } from "../../utils/UserData";
-// import { getAllPost, getAllPostWithIdUser } from "../../nestjs/api";
 import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { getAllPostWithIdUser } from "../../../nestjs/api";
 import { typeData } from "../../../utils/UserData";
-// import { getAllPostWithIdUser } from "../../../../nestjs/api";
-// import { typeData } from "../../../../utils/UserData";
-// import { useUser } from "../../screen/UserContext";
 
 const styles = StyleSheet.create({
     container: {
@@ -21,17 +15,13 @@ const styles = StyleSheet.create({
 
 
 function ProfilePostSearch() {
-    // const { idUser } = useUser();
-    // console.log("User ID: ", idUser);
     const navigation: NavigationProp<RootStackParamList> = useNavigation();
     const route: RouteProp<RootStackParamList, "UserProfileSearch"> = useRoute();
         
     console.log("---------------- PARAMS ITEM OF PROFILE POST DETAIL --------");
-            //console.log(route.params.item)
     const selectedItem = route.params.user;
         
-    console.log("ID USER SEARCH: " + selectedItem.idUser);
-    const idUserSearch = selectedItem.idUser;
+    console.log("ID USER SEARCH: " + selectedItem._id);
     
 
     const [selected, setSelected]= useState(1)
@@ -42,13 +32,7 @@ function ProfilePostSearch() {
             </View>
         )
     }
-    // const renderItem = item => {
-    //     return (
-    //         <View>
-    //             <Image source={item.item.post.image}/>
-    //         </View>
-    //     )
-    // }
+  
     console.log(selected)
 
 
@@ -57,7 +41,7 @@ function ProfilePostSearch() {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await getAllPostWithIdUser({idUser: idUserSearch});
+                const response = await getAllPostWithIdUser({user: selectedItem._id});
                 setPostsUser(response.data); // set danh sách post
                 console.log("Fetched posts:", response.data);
             } catch (error) {
@@ -67,7 +51,6 @@ function ProfilePostSearch() {
 
         fetchPosts();
     }, []);
-    // console.log(postsUser);
 
     return (
         <View style={{ paddingTop: 25, backgroundColor: '#fff', }}>
@@ -85,15 +68,6 @@ function ProfilePostSearch() {
                     )
                 })}
             </View>
-            {/* {selected ==1 && (
-                <FlatList 
-                    data={UserData} 
-                    renderItem={renderItem} 
-                    keyExtractor={item => item.id.toString()} 
-                    numColumns={3} 
-                    showsHorizontalScrollIndicator= {false}
-                />
-            )} */}
             
             <View style= {{marginLeft: 4, marginTop: 5}}>
                 {selected === 1 && (
@@ -108,7 +82,7 @@ function ProfilePostSearch() {
                                 <Image style={{ height: 130, width: 132, marginBottom: 3, marginRight: 3}} source={{ uri: item.image }} />
                             </TouchableOpacity>
                         )}
-                        keyExtractor={(item) => item.idPost.toString()}
+                        keyExtractor={(item) => item.idPost}
                         numColumns={3}
                         showsHorizontalScrollIndicator={false}
                     />

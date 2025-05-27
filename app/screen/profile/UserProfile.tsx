@@ -23,7 +23,7 @@ function ProfileMain() {
 
 
   return (
-    <View>
+    <View style= {{backgroundColor: "#fff", flex: 1}}>
       <ProfileHeader/>
       <ProfileDetails/>
       <ProfilePost/>

@@ -66,7 +66,6 @@ function ProfileDetails() {
     }, []) // không cần idUser nếu nó không thay đổi
     );
 
-  
 
     // ============================= IMAGE =============================
     const [image, setImage] = useState<string | null>(null);
@@ -110,27 +109,34 @@ function ProfileDetails() {
 
       
     };
-    //console.log("Image path:"+ image);
     
     // ============================= NUMBER OF FOLLOWER, FOLLOWING, POSTS =============================
     const [numFollowers, setNumFollower]= useState(0);
     const [numFollowing, setNumFollowing]= useState(0);
-    useEffect(() => {
-        const fetchNumFollow = async () => {
-            try {
-                const response1 = await getAllFollowersWithIdUser({user: idUser});
-                const response2 = await getAllFollowingWithIdUser({user: idUser});
+    const fetchNumFollow = async () => {
+        try {
+            const response1 = await getAllFollowersWithIdUser({user: idUser});
+            const response2 = await getAllFollowingWithIdUser({user: idUser});
 
-                setNumFollower(response1.data.length);
-                setNumFollowing(response2.data.length);
-                } catch (error) {
+            setNumFollower(response1.data.length);
+            setNumFollowing(response2.data.length);
+            } catch (error) {
                     console.error("Failed to fetch followers:", error);
-                }
-            };
-            fetchNumFollow();
+        }
+    };
+    useEffect(() => {
+        fetchNumFollow();
     }, []);
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            fetchNumFollow();
+        });
+
+        return unsubscribe;
+    }, [navigation]);
+
     const [numPosts, setNumPosts] = useState(0);
-        useEffect(() => {
+    useEffect(() => {
             const fetchNumPosts = async () => {
                 try {
                     const response = await getAllPostWithIdUser({user: idUser});
@@ -168,7 +174,9 @@ function ProfileDetails() {
                     <Text style= {{fontSize: 24, fontWeight: '400', color: 'black'}}>{numFollowers}</Text>
                     <Text style= {{fontSize: 16, color: 'black'}}>Followers</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style= {{width: 75, alignItems: 'center'}}>
+                <TouchableOpacity 
+                    onPress={() => navigation.navigate("Followings")}
+                    style= {{width: 75, alignItems: 'center'}}>
                     <Text style= {{fontSize: 24, fontWeight: '400', color: 'black'}}>{numFollowing}</Text>
                     <Text style= {{fontSize: 16, color: 'black'}}>Following</Text>
                 </TouchableOpacity>

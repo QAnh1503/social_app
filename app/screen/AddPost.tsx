@@ -57,9 +57,7 @@ const AddPost = () => {
 
     
     // ============================= TAGS =============================
-    // const [selectedTags, setSelectedTags] = useState([]);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
-
     const suggestedTags = ['Food', 'Drink', 'Recipe', 'Yoga', 'Gym', 'Jogging', 'Medicine' ];
 
     const handleAddTag = (tag: string) => {
@@ -70,11 +68,9 @@ const AddPost = () => {
     const handleRemoveTag = (tag: string) => {
         setSelectedTags(selectedTags.filter(t => t !== tag));
     };
-    
     //console.log("Tag:"+ selectedTags);
 
    
-
     const handleNextBtn = async () => {
         console.log("==================================///////")
         console.log("User ID: ", idUser);
@@ -90,7 +86,7 @@ const AddPost = () => {
                 description,
                 image: imagee,
                 tags: tags,
-                user: idUser 
+                idUser: idUser 
             });
             console.log("Add Post successfully !", res.data);
             navigation.navigate("Dashboard");

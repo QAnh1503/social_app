@@ -100,6 +100,7 @@ function ProfileHeader() {
                 </View>
             </View>
 
+            {/* ======== MODAL LIST MENU ========*/}
             <Modal 
                 animationType="slide"
                 transparent= {true}
@@ -195,6 +196,7 @@ function ProfileHeader() {
                 </View>
             </Modal>
 
+            {/* ======== MODAL COIN ========*/}
             <Modal
             animationType="slide"
             transparent= {true}
@@ -230,6 +232,7 @@ function ProfileHeader() {
                 </View>
             </Modal>
 
+            {/* ======== MODAL ADD STORY/ POST ========*/}
             <Modal 
                 animationType="slide"
                 transparent= {true}
@@ -265,7 +268,7 @@ function ProfileHeader() {
                                 </TouchableOpacity>
                                 <TouchableOpacity 
                                     onPress={() => {
-                                        handleCloseModal_Post_Story();  // đóng modal
+                                        handleCloseModal_Post_Story();  
                                         setTimeout(() => {
                                             navigation.navigate('AddPost'); // delay để modal đóng trước
                                         }, 200);  // đợi 200ms cho hiệu ứng modal đóng
