@@ -23,32 +23,6 @@ import { NavigationProp, useFocusEffect, useNavigation } from "@react-navigation
 import Stories from "../../components/dashboard/story/Stories";
 const AiLogo = require('../../../assets/images/aiLogo.png')
 
-// {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-
-// interface PostListProps {
-//   postList: PostType[];
-// }
-
-// const PostList: React.FC<PostListProps> = ({ postList }) => {
-//   const renderPost = ({ item }: { item: PostType }) => (
-//     <View>
-//       <ScrollView>
-//         {/* <Post item={item} /> */}
-//         <PostContent item={item} />
-//       </ScrollView>
-//     </View>
-//   );
-
-// return (
-//   <FlatList
-//     data={postList}
-//     renderItem={renderPost}
-//     keyExtractor={item => item.id}
-//     showsVerticalScrollIndicator={false}
-//   />
-// );
-
-// }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
 
 type PostUser = {
   idPost: string; // hoặc number, tùy vào dữ liệu thực tế
@@ -71,63 +45,214 @@ type PostUser = {
 function PostList() {
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
 
-
-
-  console.log("THIS IS POST LIST");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [advices, setAdvices] = useState<any[] | null>(null);
 
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
-  // const [isLiked, setIsLiked] = useState(false);
-  // const [likesCount, setLikesCount] = useState(0);
+  
+
   //
-  // const handleLike = () => {
-  //   if (isLiked) {
-  //     setLikesCount((prev) => prev - 1);
-  //   } else {
-  //     setLikesCount((prev) => prev + 1);
-  //   }
-  //   setIsLiked(!isLiked);
-  // };
-  const handleLike = async (postId: string) => {
-    let updatedPost: { idPost: number; likes: number } | null = null;
+  ================== FETCH POSTS =======================
+  const [postsUser, setPostsUser] = useState<PostUser[]>([]);
+  // const postsWithUser:
+  //   | ((prevState: PostUser[]) => PostUser[])
+  //   | {
+  //       idPost: any;
+  //       image: any;
+  //       idUser: any;
+  //       name: any;
+  //       avatar: any;
+  //       likes: number;
+  //       number_of_comments: any;
+  //       description: any;
+  //       tags: any;
+  //       created_at: any;
 
-    setPostsUser((prevPosts) =>
-      prevPosts.map((post) => {
-        if (post.idPost === postId) {
-          console.log("ID POST: " + post.idPost);
-          console.log("LIKES: " + post.likes);
+  //       isLiked: any;
+  //       likesCount: any;
+  //     }[] = [];
 
-          const updatedLiked = !post.isLiked;
-          const updatedLikesCount = post.likesCount + (updatedLiked ? 1 : -1);
+  const [skipFetch, setSkipFetch] = useState(false);
+  useFocusEffect(
+  useCallback(() => {
+    if (skipFetch) {
+      console.log("⏭ Skip fetching posts...");
+      return;
+    }
+    // const fetchPosts = async () => {
+    //   const postsWithUser:
+    // | ((prevState: PostUser[]) => PostUser[])
+    // | {
+    //     idPost: any;
+    //     image: any;
+    //     idUser: any;
+    //     name: any;
+    //     avatar: any;
+    //     likes: number;
+    //     number_of_comments: any;
+    //     description: any;
+    //     tags: any;
+    //     created_at: any;
 
-          console.log("UPDATE LIKES: " + updatedLikesCount);
-          // Lưu thông tin để cập nhật sau
-          updatedPost = {
-            idPost: Number(post.idPost),
-            likes: updatedLikesCount,
-          };
-          return {
-            ...post,
-            isLiked: updatedLiked,
-            likesCount: updatedLikesCount,
-          };
-        }
-        return post;
-      })
-    );
-    if (updatedPost) {
-      try {
-        console.log("Sending to API:", updatedPost);
-        await updatePost(updatedPost);
-        console.log("Update likescount in Post successfully !")
-      } catch (error) {
-        console.error("Lỗi khi cập nhật like:", error);
-      }
+    //     isLiked: any;
+    //     likesCount: any;
+    //   }[] = [];
+    //   try {
+    //     const response = await getAllPost();
+    //     const posts = response.data;
+
+    //     // console.log("------------------POST-----------------");
+    //     // console.log("FETCH POSTS: ", posts)
+
+    //     //console.log("------------------POST DETAILS-----------------");
+    //     for (const post of posts) {
+    //       // const userResponse = await getOneUserById({ idUser: post.idUser });
+    //       // const user = userResponse.data;
+    //       const cmtResponse = await getAllCommentWithIdPost({ idPost:  post._id});
+
+    //       const postUser = {
+    //         idPost: post._id,
+    //         image: post.image,
+    //         likes: post.likes,
+    //         number_of_comments: cmtResponse.data.length,
+    //         description: post.description,
+    //         tags: post.tags,
+    //         // created_at: post.created_at,
+    //         created_at: formatDistanceToNow(new Date(post.created_at), { addSuffix: true }),
+    //         idUser: post.user._id,
+    //         name: post.user.name,
+    //         avatar: post.user.avatar,
+    //         isLiked: false, // thêm
+    //         likesCount: post.likes, // thêm
+    //       }; 
+
+    //       postsWithUser.push(postUser);
+    //     }
+    //     //console.log("✅ Posts with user info:", postsWithUser);
+    //     setPostsUser(postsWithUser);
+    //   } catch (error) {
+    //     console.error("❌ Failed to fetch posts:", error);
+    //   }
+    // };
+
+    const fetchPosts = async () => {
+    try {
+      const response = await getAllPost();
+      const posts = response.data;
+
+      const postsWithUser = posts.map((post: { _id: string; image: any; likes: any; number_of_comments: any; description: any; tags: any; created_at: string | number | Date; user: { _id: any; name: any; avatar: any; }; }) => {
+        const oldPost = postsUser.find(p => p.idPost === post._id);
+        return {
+          idPost: post._id,
+          image: post.image,
+          likes: post.likes,
+          number_of_comments: post.number_of_comments,
+          description: post.description,
+          tags: post.tags,
+          created_at: formatDistanceToNow(new Date(post.created_at), { addSuffix: true }),
+          idUser: post.user._id,
+          name: post.user.name,
+          avatar: post.user.avatar,
+          isLiked: oldPost ? oldPost.isLiked : false,  // Giữ lại trạng thái cũ nếu có
+          likesCount: post.likes,
+        };
+      });
+
+      setPostsUser(postsWithUser);
+    } catch (error) {
+      console.error("❌ Failed to fetch posts:", error);
     }
   };
 
-  //====================== POSTS =======================
+    fetchPosts();
+  }, [skipFetch]));
+
+  // ===================== HANDLE LIKE ======================
+  // const handleLike = async (postId: string) => {
+  //   setSkipFetch(true); // 👈 chặn refetch ngay sau like
+  //   let updatedPost: { idPost: string; likes: number } | null = null;
+
+  //   setPostsUser((prevPosts) =>
+  //     prevPosts.map((post) => {
+  //       if (post.idPost === postId) {
+  //         console.log("ID POST: " + post.idPost);
+  //         console.log("LIKES: " + post.likes);
+
+  //         const updatedLiked = !post.isLiked;
+  //         const updatedLikesCount = post.likesCount + (updatedLiked ? 1 : -1);
+
+  //         console.log("UPDATE LIKES: " + updatedLikesCount);
+  //         // Lưu thông tin để cập nhật sau
+  //         updatedPost = {
+  //           idPost: post.idPost,
+  //           likes: updatedLikesCount,
+  //         };
+  //         return {
+  //           ...post,
+  //           isLiked: updatedLiked,
+  //           likesCount: updatedLikesCount,
+  //         };
+  //       }
+  //       return post;
+  //     })
+  //   );
+  //   console.log("updatedPost after setPostsUser:", updatedPost);
+  //   if (updatedPost) {
+  //     console.log("UPDATED POST---------------------")
+  //     try {
+
+  //       console.log("Sending to APIIIIIIIIIIIIIIIII:", updatedPost);
+  //       await updatePost(updatedPost);
+  //       console.log("Update likescount in Post successfully !")
+  //     } catch (error) {
+  //       console.error("Lỗi khi cập nhật like:", error);
+  //     }
+  //   }
+  //   // Sau vài giây mới cho phép fetch lại
+  //   setTimeout(() => {
+  //     setSkipFetch(false);
+  //   }, 15000); // thời gian tuỳ bạn
+  // };
+  const handleLike = async (postId: string) => {
+    setSkipFetch(true);
+
+    // Tìm post hiện tại
+    const currentPost = postsUser.find(post => post.idPost === postId);
+    if (!currentPost) {
+      console.warn("Không tìm thấy bài post có id:", postId);
+      return;
+    }
+
+    const updatedLiked = !currentPost.isLiked;
+    const updatedLikesCount = currentPost.likesCount + (updatedLiked ? 1 : -1);
+    
+    const updatedPost = {
+      id: postId,
+      likes: updatedLikesCount,
+    };
+
+    // Cập nhật state
+    setPostsUser((prevPosts) =>
+      prevPosts.map((post) =>
+        post.idPost === postId
+          ? { ...post, isLiked: updatedLiked, likesCount: updatedLikesCount }
+          : post
+      )
+    );
+
+    console.log("Sending to API:", updatedPost);
+    try {
+      await updatePost(updatedPost);
+      console.log("Update likescount in Post successfully!");
+    } catch (error) {
+      console.error("Lỗi khi cập nhật like:", error);
+    }
+
+    setTimeout(() => {
+      setSkipFetch(false);
+    }, 15000);
+  };
+
 
   const [postsUser, setPostsUser] = useState<PostUser[]>([]);
   const postsWithUser:
@@ -238,14 +363,11 @@ function PostList() {
         <Image style={{ width: 40, height: 40, borderRadius: 100 }} source={AiLogo}></Image>
       </TouchableOpacity>
       <FlatList
-        //data={postsWithUser}
         key={numColumns} // 💡 Thêm dòng này
         data={postsUser}
-
         ListHeaderComponent={<Stories />}
         contentContainerStyle={{ paddingBottom: 40 }}
         renderItem={({ item, index }) => (
-
           <View style={styles.postContainer}>
             {/* <Modal
             animationType="fade"
@@ -275,7 +397,6 @@ function PostList() {
                 />
                 <View>
                   <Text style={styles.userName}>
-                    {/* {item.user.name}{" "} */}
                     {item.name}{" "}
                     <Text style={styles.inGroup}>in {item.tags} Group</Text>
                   </Text>
@@ -308,18 +429,6 @@ function PostList() {
             </View>
 
             <View style={styles.postStats}>
-              {/* <TouchableOpacity
-              style={styles.statButton}
-              onPress={handleLike}
-              activeOpacity={0.7}
-            >
-              {isLiked ? (
-                <LikedIcon width={24} height={24} />
-              ) : (
-                <LikeIcon width={24} height={24} />
-              )}
-              <Text style={styles.statText}>{likesCount}{item.likes} likes</Text>
-            </TouchableOpacity> */}
               <TouchableOpacity
                 style={styles.statButton}
                 onPress={() => handleLike(item.idPost)}
@@ -336,6 +445,8 @@ function PostList() {
               <TouchableOpacity
                 onPress={() =>
                   navigation.navigate("PostListDetails", { item })
+                  //Use this line if we get any error with above line
+                  //navigation.navigate("PostListDetails", { idPost: item.idPost , idUser: item.idUser, isLike: item.isLiked})
                 }
 
                 style={styles.statButton}
@@ -375,6 +486,8 @@ function PostList() {
         keyExtractor={(item) => item.idPost.toString()}
         numColumns={1}
         showsHorizontalScrollIndicator={false}
+        scrollEnabled={false} // ❗ Tắt scroll riêng của FlatList
+        nestedScrollEnabled={true} // ✅ Cho phép lồng trong ScrollView
       />
 
       <Modal

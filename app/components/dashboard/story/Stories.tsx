@@ -65,115 +65,86 @@ const Stories: React.FC<StoriesProps> = () => {
 
     const [stories, setStories] = useState<Story[]>([]);
        
+
     // useEffect(() => {
-    //     const unsubscribe = navigation.addListener('focus', () => {
-    //     const fetchStories = async () => {
-    //         try {
-    //             const res = await getAllStory();
-    //             const stories = res.data;
+    // const fetchStories = async () => {
+    //     try {
+    //     const res = await getAllStory();
+    //     //console.log("FETCH STORIES:", res.data);
 
-    //             console.log("FETCH STORIES:", res.data)
+    //     const stories = res.data;
 
-    //             const storiesWithUser = await Promise.all(
-    //                 stories.map(async (story: any) => {
-    //                     const storyResponse = await getOneUserById({ idUser: story.user._id });
-    //                     const user = storyResponse.data;
+    //     const storiesWithUser = stories.map((story: any) => {
+    //         return {
+    //         idStory: story._id,
+    //         image: story.image,
+    //         content: story.content,
+    //         created_at: formatDistanceToNow(new Date(story.created_at), { addSuffix: true }),
+    //         idUser: story.user._id,
+    //         name: story.user.name,
+    //         avatar: story.user.avatar,
+    //         };
+    //     });
 
-    //                     return {
-    //                     idStory: story._id,
-    //                     image: story.image,
-    //                     content: story.content,
-    //                     created_at: formatDistanceToNow(new Date(story.created_at), { addSuffix: true }),
-    //                     idUser: story.user._id,
-    //                     name: user.name,
-    //                     avatar: user.avatar,
-    //                     };
-    //                 })
-    //             );
+    //     setStories(storiesWithUser);
+    //     //console.log("FETCH STORIES FINAL:", storiesWithUser);
 
-    //             // const storiesWithUserSorted = storiesWithUser.sort((a, b) => {
-    //             // if (a.idUser === idUser) return -1;
-    //             // if (b.idUser === idUser) return 1;
-    //             //     return 0;
-    //             // });
+    //     } catch (err) {
+    //     console.log("Lỗi khi lấy storiesssssssssss:", err);
+    //     }
+    // };
 
-    //             // setStories(storiesWithUserSorted);
+    // fetchStories();
+    // }, []);
 
-    //             // Kiểm tra xem người dùng hiện tại có story không
-    //             const hasMyStory = storiesWithUser.some(story => story.user._id === idUser);
-
-    //             let finalStories = storiesWithUser;
-
-    //             if (!hasMyStory) {
-    //             // Thêm avatar riêng của mình vào đầu danh sách
-    //             finalStories = [{
-    //                 idStory: -1, // ID giả
-    //                 image: '',
-    //                 content: '',
-    //                 created_at: '',
-    //                 idUser: idUser,
-    //                 name: 'You',
-    //                 avatar: avatar, // từ useUserData hoặc useUser
-    //             }, ...storiesWithUser];
-    //             } else {
-    //             // Sắp xếp để đẩy lên đầu nếu có
-    //             finalStories = storiesWithUser.sort((a, b) => {
-    //                 if (a.idUser === idUser) return -1;
-    //                 if (b.idUser === idUser) return 1;
-    //                 return 0;
-    //             });
-    //             }
-
-    //             setStories(finalStories);
-                
-
-    //         } catch (err) {
-    //             console.error("Lỗi khi lấy storiesssssssssss:", err);
-    //         }
-    //     };
-
-    //     fetchStories();
-    // });
-
-    // return unsubscribe; // cleanup
-    // }, [navigation]);
-
-
-    // const storiesSelect= () => {
-    //     console.log("WHEN CLICK ANY STORY");
-    //     console.log(stories);
-    // }
 
     useEffect(() => {
-    const fetchStories = async () => {
-        try {
-        const res = await getAllStory();
-        //console.log("FETCH STORIES:", res.data);
+  const fetchStories = async () => {
+    try {
+      const res = await getAllStory();
+      const stories = res.data;
 
-        const stories = res.data;
+      // Chuyển story thành format mong muốn
+      let storiesWithUser = stories.map((story: any) => ({
+        idStory: story._id,
+        image: story.image,
+        content: story.content,
+        created_at: formatDistanceToNow(new Date(story.created_at), { addSuffix: true }),
+        idUser: story.user._id,
+        name: story.user.name,
+        avatar: story.user.avatar,
+      }));
 
-        const storiesWithUser = stories.map((story: any) => {
-            return {
-            idStory: story._id,
-            image: story.image,
-            content: story.content,
-            created_at: formatDistanceToNow(new Date(story.created_at), { addSuffix: true }),
-            idUser: story.user._id,
-            name: story.user.name,
-            avatar: story.user.avatar,
-            };
+      // Kiểm tra xem người dùng hiện tại có story hay chưa
+      const hasUserStory = storiesWithUser.some((story: { idUser: string; }) => story.idUser === idUser);
+
+      if (!hasUserStory) {
+        // Nếu chưa có, thêm một story "ảo" vào đầu danh sách
+        storiesWithUser.unshift({
+          idStory: "me",           // gán ID giả
+          image: null,             // không có hình
+          content: null,
+          created_at: null,
+          idUser,
+          name: "You",             // hoặc tên user nếu có
+          avatar,
         });
+      } else {
+        // Nếu có, đưa story của user hiện tại lên đầu
+        storiesWithUser = [
+          ...storiesWithUser.filter((story: { idUser: string; }) => story.idUser === idUser),
+          ...storiesWithUser.filter((story: { idUser: string; }) => story.idUser !== idUser),
+        ];
+      }
 
-        setStories(storiesWithUser);
-        //console.log("FETCH STORIES FINAL:", storiesWithUser);
+      setStories(storiesWithUser);
+    } catch (err) {
+      console.log("Lỗi khi lấy stories:", err);
+    }
+  };
 
-        } catch (err) {
-        console.log("Lỗi khi lấy storiesssssssssss:", err);
-        }
-    };
-
-    fetchStories();
-    }, []);
+  fetchStories();
+}, [idUser, avatar]); // nhớ thêm dependency nếu dùng avatar
 
 
     //console.log("FETCH STORIES WITH ALL USERS: ", stories)
@@ -222,25 +193,35 @@ const Stories: React.FC<StoriesProps> = () => {
                     <View  style= {{marginLeft: 10}}>
                         <TouchableOpacity 
                             //onPress={() => navigation.navigate('Story', {item})}
+                            // onPress={() => {
+                            //     if (item.idStory !== -1) {
+                            //     navigation.navigate('Story', { item });
+                            //     } else {
+                            //     // Có thể cho phép người dùng thêm story mới nếu muốn
+                            //     console.log('Hiển thị avatar cá nhân');
+                            //     }
+                            // }}
                             onPress={() => {
-                                if (item.idStory !== -1) {
-                                navigation.navigate('Story', { item });
+                                if (item.idStory !== 'me') {
+                                    navigation.navigate('Story', { item });
                                 } else {
-                                // Có thể cho phép người dùng thêm story mới nếu muốn
-                                console.log('Hiển thị avatar cá nhân');
+                                    console.log('Hiển thị avatar cá nhân');
+                                    // Có thể điều hướng đến màn hình tạo story nếu muốn
+                                    //navigation.navigate('CreateStory');
                                 }
                             }}
+
                         >
                             <View 
                                 style= {{
-                                    // borderWidth: 3, 
-                                    // borderColor: '#ff1493', 
-                                    // borderRadius: 50, 
-                                    // padding: 3
-                                    borderWidth: item.idStory !== -1 ? 3 : 0,
+                                    // borderWidth: item.idStory !== -1 ? 3 : 0,
+                                    // borderColor: '#ff1493',
+                                    // borderRadius: 50,
+                                    // padding: item.idStory !== -1 ? 3 : 0,
+                                    borderWidth: item.idStory !== 'me' ? 3 : 0,
                                     borderColor: '#ff1493',
                                     borderRadius: 50,
-                                    padding: item.idStory !== -1 ? 3 : 0,
+                                    padding: item.idStory !== 'me' ? 3 : 0,
                                 }}
                                 >
                                 <Image 
@@ -248,9 +229,12 @@ const Stories: React.FC<StoriesProps> = () => {
                                         // height: 80, 
                                         // width: 80, 
                                         // borderRadius: 50
-                                        height: item.idStory !== -1 ? 80 : 90, 
-                                        width: item.idStory !== -1 ? 80 : 90, 
-                                        borderRadius: 50
+                                        // height: item.idStory !== -1 ? 80 : 90, 
+                                        // width: item.idStory !== -1 ? 80 : 90, 
+                                        // borderRadius: 50
+                                        height: item.idStory !== 'me' ? 80 : 90,
+                                        width: item.idStory !== 'me' ? 80 : 90,
+                                        borderRadius: 50,
                                     }} 
                                     source={{ uri: item.avatar}}/>
                             </View>

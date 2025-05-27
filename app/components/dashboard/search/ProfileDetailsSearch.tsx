@@ -26,13 +26,14 @@ function ProfileDetailsSearch() {
         //const selectedItem = route.params;
         const selectedItem = route.params.user;
 
+        // =============== NUM OF FOLLOWERS, FOLLOWING, POSTS ===================
         const [numFollowers, setNumFollower]= useState(0);
         const [numFollowing, setNumFollowing]= useState(0);
         useEffect(() => {
                 const fetchNumFollow = async () => {
                     try {
-                        const response1 = await getAllFollowersWithIdUser({user: selectedItem.idUser});
-                        const response2 = await getAllFollowingWithIdUser({user: selectedItem.idUser});
+                        const response1 = await getAllFollowersWithIdUser({user: selectedItem._id});
+                        const response2 = await getAllFollowingWithIdUser({user: selectedItem._id});
         
                         setNumFollower(response1.data.length);
                         setNumFollowing(response2.data.length);
@@ -41,12 +42,12 @@ function ProfileDetailsSearch() {
                         }
                     };
                     fetchNumFollow();
-            }, []);
-            const [numPosts, setNumPosts] = useState(0);
-                useEffect(() => {
+        }, []);
+        const [numPosts, setNumPosts] = useState(0);
+            useEffect(() => {
                     const fetchNumPosts = async () => {
                         try {
-                            const response = await getAllPostWithIdUser({user: selectedItem.idUserFollower});
+                            const response = await getAllPostWithIdUser({user: selectedItem._id});
                             setNumPosts(response.data.length); 
                         } catch (error) {
                             console.error("Failed to fetch posts:", error);
@@ -54,7 +55,7 @@ function ProfileDetailsSearch() {
                     };
             
                 fetchNumPosts();
-        }, []);
+    }, []);
 
         
     return (

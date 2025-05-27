@@ -24,9 +24,9 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({unreadNotification}) =
                     >
                     <View style= {{position: 'relative', backgroundColor: '#fff'}}>
                         <Image style={{ height: 34, width: 33 }} source={MessageLogoImage} />
-                        <View style= {{position: 'absolute', bottom: 22, left: 25}}>
+                        {/* <View style= {{position: 'absolute', bottom: 22, left: 25}}>
                             <Text style= {{backgroundColor: 'white', paddingHorizontal: 5, borderRadius: 10,borderWidth: 1, borderColor: 'black'}}>{unreadNotification}</Text>
-                        </View>
+                        </View> */}
                     </View>
                 </TouchableOpacity>
             </View>

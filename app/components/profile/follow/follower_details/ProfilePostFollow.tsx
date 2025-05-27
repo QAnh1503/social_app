@@ -1,14 +1,10 @@
 import {  ImageSourcePropType, SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
 
 import { View, Platform, Text, Image , FlatList} from 'react-native';
-// import { typeData, UserData } from "../../../utils/UserData";
 import { useEffect, useState } from "react";
-// import { typeData } from "../../utils/UserData";
-// import { getAllPost, getAllPostWithIdUser } from "../../nestjs/api";
 import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { getAllPostWithIdUser } from "../../../../nestjs/api";
 import { typeData } from "../../../../utils/UserData";
-// import { useUser } from "../../screen/UserContext";
 
 const styles = StyleSheet.create({
     container: {
@@ -19,8 +15,6 @@ const styles = StyleSheet.create({
 
 
 function ProfilePostFollow() {
-    // const { idUser } = useUser();
-    // console.log("User ID: ", idUser);
     const navigation: NavigationProp<RootStackParamList> = useNavigation();
     const route: RouteProp<RootStackParamList, "UserProfileFollow"> = useRoute();
         
@@ -40,13 +34,7 @@ function ProfilePostFollow() {
             </View>
         )
     }
-    // const renderItem = item => {
-    //     return (
-    //         <View>
-    //             <Image source={item.item.post.image}/>
-    //         </View>
-    //     )
-    // }
+   
     console.log(selected)
 
 
@@ -55,7 +43,7 @@ function ProfilePostFollow() {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await getAllPostWithIdUser({idUser: idUserFollow});
+                const response = await getAllPostWithIdUser({user: idUserFollow});
                 setPostsUser(response.data); // set danh sách post
                 console.log("Fetched posts:", response.data);
             } catch (error) {
@@ -83,15 +71,7 @@ function ProfilePostFollow() {
                     )
                 })}
             </View>
-            {/* {selected ==1 && (
-                <FlatList 
-                    data={UserData} 
-                    renderItem={renderItem} 
-                    keyExtractor={item => item.id.toString()} 
-                    numColumns={3} 
-                    showsHorizontalScrollIndicator= {false}
-                />
-            )} */}
+           
             
             <View style= {{marginLeft: 4, marginTop: 5}}>
                 {selected === 1 && (
@@ -106,7 +86,7 @@ function ProfilePostFollow() {
                                 <Image style={{ height: 130, width: 132, marginBottom: 3, marginRight: 3}} source={{ uri: item.image }} />
                             </TouchableOpacity>
                         )}
-                        keyExtractor={(item) => item.idPost.toString()}
+                        keyExtractor={(item) => item.idPost}
                         numColumns={3}
                         showsHorizontalScrollIndicator={false}
                     />

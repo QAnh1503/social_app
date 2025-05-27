@@ -57,9 +57,7 @@ function ProfilePost() {
     // console.log(postsUser);
 
     return (
-        <View style={{ paddingTop: 25, backgroundColor: '#fff', }}>
-           
-            
+        <View style={{ paddingTop: 25, backgroundColor: '#fff', paddingHorizontal: 10 }}>
             <View style= {{marginLeft: 4, marginTop: 5}}>
                 {selected === 1 && (
                     <FlatList
@@ -81,10 +79,7 @@ function ProfilePost() {
                         showsHorizontalScrollIndicator={false}
                     />
                 )}
-
             </View>
-            
-
         </View>
     );
 }

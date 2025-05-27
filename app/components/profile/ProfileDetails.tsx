@@ -1,6 +1,6 @@
 import { SafeAreaView, StyleSheet, TouchableOpacity } from "react-native";
 
-import { View, Platform, Text, Image } from 'react-native';
+import { View, Platform, Text, Image , Share, Linking} from 'react-native';
 import { useUser } from "../../screen/UserContext";
 import { getAllFollowersWithIdUser, getAllFollowingWithIdUser, getAllPostWithIdUser, getOneUserById, loginUser, updateAvatar } from "../../nestjs/api";
 import { useCallback, useEffect, useState } from "react";
@@ -37,18 +37,7 @@ function ProfileDetails() {
     // console.log("User Posts: ", posts);
 
     const [avtUser, setAvtUser] = useState(avatar);
-    // const avatarUser = async () => {
-    //     try {
-    //         const storyResponse = await getOneUserById({ idUser: idUser });
-    //         const user = storyResponse.data;
-    //         const avtUserr= user.avatar;
-    //         console.log("✅ AVATAR USER: ", avtUserr);
-    //         setAvtUser(avtUserr);
     
-    //     } catch (err) {
-    //         console.error("Lỗi khi lấy stories:", err);
-    //     }
-    // }
     useFocusEffect(
     useCallback(() => {
         const fetchUserAvatar = async () => {
@@ -66,7 +55,6 @@ function ProfileDetails() {
     }, []) // không cần idUser nếu nó không thay đổi
     );
 
-  
 
     // ============================= IMAGE =============================
     const [image, setImage] = useState<string | null>(null);
@@ -110,27 +98,34 @@ function ProfileDetails() {
 
       
     };
-    //console.log("Image path:"+ image);
     
     // ============================= NUMBER OF FOLLOWER, FOLLOWING, POSTS =============================
     const [numFollowers, setNumFollower]= useState(0);
     const [numFollowing, setNumFollowing]= useState(0);
-    useEffect(() => {
-        const fetchNumFollow = async () => {
-            try {
-                const response1 = await getAllFollowersWithIdUser({user: idUser});
-                const response2 = await getAllFollowingWithIdUser({user: idUser});
+    const fetchNumFollow = async () => {
+        try {
+            const response1 = await getAllFollowersWithIdUser({user: idUser});
+            const response2 = await getAllFollowingWithIdUser({user: idUser});
 
-                setNumFollower(response1.data.length);
-                setNumFollowing(response2.data.length);
-                } catch (error) {
+            setNumFollower(response1.data.length);
+            setNumFollowing(response2.data.length);
+            } catch (error) {
                     console.error("Failed to fetch followers:", error);
-                }
-            };
-            fetchNumFollow();
+        }
+    };
+    useEffect(() => {
+        fetchNumFollow();
     }, []);
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            fetchNumFollow();
+        });
+
+        return unsubscribe;
+    }, [navigation]);
+
     const [numPosts, setNumPosts] = useState(0);
-        useEffect(() => {
+    useEffect(() => {
             const fetchNumPosts = async () => {
                 try {
                     const response = await getAllPostWithIdUser({user: idUser});
@@ -142,6 +137,27 @@ function ProfileDetails() {
     
             fetchNumPosts();
     }, []);
+
+
+    // =========================== SHARE PROFILE ============================
+    const onShare = async () => {
+        try {
+            const result = await Share.share({
+                message: `Check out my profile at https://vibelap.com/myprofile/id/${idUser}`,
+            });
+            // if (result.action === Share.sharedAction) {
+            //     alert('Profile shared!');
+            // } else if (result.action === Share.dismissedAction) {
+            //     alert('Share dismissed.');
+            // }
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                alert('Error: ' + error.message);
+            } else {
+                alert('An unknown error occurred.');
+            }
+        }
+    };
 
     return (
         <View style={{ paddingHorizontal: 15 , paddingTop: 20, backgroundColor: '#fff',}}>
@@ -168,14 +184,16 @@ function ProfileDetails() {
                     <Text style= {{fontSize: 24, fontWeight: '400', color: 'black'}}>{numFollowers}</Text>
                     <Text style= {{fontSize: 16, color: 'black'}}>Followers</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style= {{width: 75, alignItems: 'center'}}>
+                <TouchableOpacity 
+                    onPress={() => navigation.navigate("Followings")}
+                    style= {{width: 75, alignItems: 'center'}}>
                     <Text style= {{fontSize: 24, fontWeight: '400', color: 'black'}}>{numFollowing}</Text>
                     <Text style= {{fontSize: 16, color: 'black'}}>Following</Text>
                 </TouchableOpacity>
             </View>
             <Text style= {{fontSize: 18, color: 'black', fontWeight: '500', marginTop: 10}}>{name}</Text>
             <Text style= {{color: 'black'}}>React Native</Text>
-            <Text style= {{color: 'black'}}>Insta Clone</Text>
+            <Text style= {{color: 'black'}}>Nest JS</Text>
             <Text style= {{color: 'black', fontSize: 16, fontWeight: '500'}}>See translation</Text>
 
             <View style= {{flexDirection: 'row', marginTop: 13,justifyContent: 'space-between'}}>
@@ -184,7 +202,9 @@ function ProfileDetails() {
                     style= {{justifyContent: "center",alignItems: 'center', height: 40}}>
                     <Text style= {{backgroundColor: '#E1E1E1',borderRadius: 3, width: 185,paddingHorizontal: 11, paddingVertical: 6, textAlign: 'center', color: 'black'}}>Edit Profile</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style= {{justifyContent: "center",alignItems: 'center', height: 40}}>
+                <TouchableOpacity 
+                    onPress={onShare}
+                    style= {{justifyContent: "center",alignItems: 'center', height: 40}}>
                     <Text style= {{backgroundColor: '#E1E1E1',borderRadius: 3, width: 185, paddingHorizontal: 11, paddingVertical: 6, textAlign: 'center', color: 'black'}}>Share Profile</Text>
                 </TouchableOpacity>
             </View>
