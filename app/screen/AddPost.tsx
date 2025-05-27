@@ -90,7 +90,7 @@ const AddPost = () => {
                 description,
                 image: imagee,
                 tags: tags,
-                user: idUser 
+                idUser: idUser 
             });
             console.log("Add Post successfully !", res.data);
             navigation.navigate("Dashboard");
