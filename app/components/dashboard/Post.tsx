@@ -145,7 +145,7 @@ const Post: React.FC<PostProps> = ({ item }) => {
         // const postsWithUser = [];
 
         for (const post of posts) {
-          const userResponse = await getOneUserById({ idUser: post.idUser });
+          const userResponse = await getOneUserById({ user: post.idUser });
           const user = userResponse.data;
 
           const postUser = {
@@ -158,8 +158,7 @@ const Post: React.FC<PostProps> = ({ item }) => {
           postsWithUser.push(postUser);
         }
         
-        console.log("////////////////////////////////////////////HIIIIIII============")
-        console.log("✅ Posts with user info:", postsWithUser);
+        console.log("[Post] Posts with user info:", postsWithUser);
         setPostsUser(postsWithUser);
       } catch (error) {
         console.error("❌ Failed to fetch posts:", error);

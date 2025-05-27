@@ -11,20 +11,12 @@ import GoogleIcon from "../../assets/images/common/google.svg";
 import AppleIcon from "../../assets/images/common/apple.svg";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-// import { RootStackParamList } from "../../App";
 import { registerUser } from "../nestjs/api";
+import { RegisterStyle } from "../styles/Register.style";
 
-// type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Register'>;
 
 export default function Register() {
-    // const navigation = useNavigation<LoginScreenNavigationProp>();
-
-    // const handleContinue = () => {
-    //     navigation.navigate('Example');
-    // };
-
     const navigation: NavigationProp<RootStackParamList> = useNavigation();
-    
 
     const [email, setEmail] = useState("");
     const [name, setName] = useState("");
@@ -48,20 +40,20 @@ export default function Register() {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={RegisterStyle.container}>
         <Image
             source={require("../../assets/images/common/logo.png")}
-            style={styles.logo}
+            style={RegisterStyle.logo}
             resizeMode="contain"
         />
 
-        <Text style={styles.title}>Create an account</Text>
-        <Text style={styles.subtitle}>
+        <Text style={RegisterStyle.title}>Create an account</Text>
+        <Text style={RegisterStyle.subtitle}>
             Enter your email to sign up for this app
         </Text>
 
         <TextInput
-            style={styles.input}
+            style={RegisterStyle.input}
             placeholder="email@domain.com"
             placeholderTextColor="#999"
             keyboardType="email-address"
@@ -71,7 +63,7 @@ export default function Register() {
         />
 
         <TextInput
-            style={styles.input}
+            style={RegisterStyle.input}
             placeholder="your name"
             placeholderTextColor="#999"
             keyboardType="default"
@@ -81,7 +73,7 @@ export default function Register() {
         />
 
         <TextInput
-            style={styles.input}
+            style={RegisterStyle.input}
             placeholder="your password"
             placeholderTextColor="#999"
             keyboardType="default"
@@ -91,8 +83,8 @@ export default function Register() {
             onChangeText={setPassword}
         />
 
-        <TouchableOpacity style={styles.continueButton} onPress={handleRegister}>
-            <Text style={styles.continueButtonText}>Register</Text>
+        <TouchableOpacity style={RegisterStyle.continueButton} onPress={handleRegister}>
+            <Text style={RegisterStyle.continueButtonText}>Register</Text>
         </TouchableOpacity>
 
 
@@ -101,121 +93,27 @@ export default function Register() {
                 </TouchableOpacity>
                 */}
 
-        <View style={styles.orContainer}>
-            <View style={styles.orLine} />
-            <Text style={styles.orText}>or</Text>
-            <View style={styles.orLine} />
+        <View style={RegisterStyle.orContainer}>
+            <View style={RegisterStyle.orLine} />
+            <Text style={RegisterStyle.orText}>or</Text>
+            <View style={RegisterStyle.orLine} />
         </View>
 
-        <TouchableOpacity style={styles.socialButton}>
-            <GoogleIcon style={styles.socialIcon} width={24} height={24} />
-            <Text style={styles.socialButtonText}>Continue with Google</Text>
+        <TouchableOpacity style={RegisterStyle.socialButton}>
+            <GoogleIcon style={RegisterStyle.socialIcon} width={24} height={24} />
+            <Text style={RegisterStyle.socialButtonText}>Continue with Google</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.socialButton}>
-            <AppleIcon style={styles.socialIcon} width={24} height={24} />
-            <Text style={styles.socialButtonText}>Continue with Apple</Text>
+        <TouchableOpacity style={RegisterStyle.socialButton}>
+            <AppleIcon style={RegisterStyle.socialIcon} width={24} height={24} />
+            <Text style={RegisterStyle.socialButtonText}>Continue with Apple</Text>
         </TouchableOpacity>
 
-        <Text style={styles.terms}>
+        <Text style={RegisterStyle.terms}>
             By clicking continue, you agree to our{" "}
-            <Text style={styles.termsLink}>Terms of Service</Text> and{" "}
-            <Text style={styles.termsLink}>Privacy Policy</Text>
+            <Text style={RegisterStyle.termsLink}>Terms of Service</Text> and{" "}
+            <Text style={RegisterStyle.termsLink}>Privacy Policy</Text>
         </Text>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    alignItems: "center",
-  },
-  logo: {
-    width: 300,
-    height: 100,
-    marginBottom: 40,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "600",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 24,
-    textAlign: "center",
-  },
-  input: {
-    width: "100%",
-    height: 50,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    marginBottom: 16,
-  },
-  continueButton: {
-    width: "100%",
-    height: 50,
-    backgroundColor: "#000",
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  continueButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  orContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 24,
-    width: "100%",
-  },
-  orLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#ddd",
-  },
-  orText: {
-    marginHorizontal: 16,
-    color: "#666",
-  },
-  socialButton: {
-    width: "100%",
-    height: 50,
-    backgroundColor: "#f5f5f5",
-    borderRadius: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 12,
-  },
-  socialIcon: {
-    width: 24,
-    height: 24,
-    marginRight: 12,
-  },
-  socialButtonText: {
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  terms: {
-    fontSize: 14,
-    color: "#666",
-    textAlign: "center",
-    marginTop: 24,
-  },
-  termsLink: {
-    color: "#000",
-    textDecorationLine: "underline",
-  },
-});

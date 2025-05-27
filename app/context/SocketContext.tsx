@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useUser } from '../screen/UserContext';
 
+const WEBSOCKET_URL = process.env.EXPO_PUBLIC_WEBSOCKET_URL;
+
 interface SocketContextType {
   socket: Socket | null;
   isConnected: boolean;
@@ -20,9 +22,11 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const { idUser } = useUser();
 
   useEffect(() => {
-    console.log('Initializing socket connection...');
-    // Khởi tạo kết nối socket khi component mount
-    const socketInstance = io('http://10.0.2.2:3000/chat', {
+    console.log('= = = = WEBSOCKET INITILIZATING = = = =')
+    console.log('[SocketContext] Initializing socket connection...');
+    console.log('[SocketContext] Websocket server address: ', WEBSOCKET_URL);
+
+    const socketInstance = io(WEBSOCKET_URL, {
       transports: ['websocket'],
       autoConnect: true,
       reconnection: true,
@@ -32,41 +36,43 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     });
 
     socketInstance.on('connect', () => {
-      console.log('✅ Socket connected successfully');
-      console.log('Socket ID:', socketInstance.id);
+      console.log('[SocketContext] Socket connected successfully ✅');
+      console.debug('[SocketContext] Socket ID:', socketInstance.id);
       setIsConnected(true);
     });
 
     socketInstance.on('connection_success', (data) => {
-      console.log('📡 Server connection success:', data);
+      console.log('[SocketContext📡  Server connection success:', data);
     });
 
     socketInstance.on('connect_error', (error) => {
-      console.error('❌ Socket connection error:', error.message);
+      console.error('[SocketContext] ❌ Socket connection error:', error.message);
     });
 
     socketInstance.on('disconnect', (reason) => {
-      console.log('❌ Socket disconnected. Reason:', reason);
+      console.log('[SocketContext] ❌ Socket disconnected. Reason:', reason);
       setIsConnected(false);
     });
 
     socketInstance.on('reconnect', (attemptNumber) => {
-      console.log('🔄 Socket reconnected after', attemptNumber, 'attempts');
+      console.log('[SocketContext] 🔄 Socket reconnected after', attemptNumber, 'attempts');
     });
 
     socketInstance.on('reconnect_error', (error) => {
-      console.error('❌ Socket reconnection error:', error.message);
+      console.error('[SocketContext] ❌ Socket reconnection error:', error.message);
     });
 
     socketInstance.on('reconnect_failed', () => {
-      console.error('❌ Socket reconnection failed after all attempts');
+      console.error('[SocketContext] ❌ Socket reconnection failed after all attempts');
     });
 
     setSocket(socketInstance);
 
+    console.log('= = = = = = = = = =')
+
     // Cleanup khi component unmount
     return () => {
-      console.log('Cleaning up socket connection...');
+      console.log('[SocketContext] Cleaning up socket connection...');
       socketInstance.disconnect();
     };
   }, []);
@@ -74,9 +80,9 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // Khi user đăng nhập thành công và có idUser, emit sự kiện user_login
   useEffect(() => {
     if (socket && idUser) {
-      console.log('👤 Emitting user_login with id:', idUser);
-      socket.emit('user_login', idUser, (response: any) => {
-        console.log('📬 Server response to user_login:', response);
+      console.log('[SocketContext] 👤 Emitting user_login with id:', idUser);
+      socket.emit('[SocketContext] user_login', idUser, (response: any) => {
+        console.log('[SocketContext] 📬 Server response to user_login:', response);
       });
     }
   }, [socket, idUser]);

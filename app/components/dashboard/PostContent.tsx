@@ -75,7 +75,7 @@ const PostContent: React.FC<PostProps> = ({ item }) => {
         // const postsWithUser = [];
 
         for (const post of posts) {
-          const userResponse = await getOneUserById({ idUser: post.idUser });
+          const userResponse = await getOneUserById({ user: post.idUser });
           const user = userResponse.data;
 
           const postUser = {

@@ -13,6 +13,7 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { loginUser } from '../nestjs/api';
 import { useUser } from './UserContext';
+import { LoginStyle } from '../styles/Login.styles';
 
 // WebBrowser.maybeCompleteAuthSession();
 
@@ -101,17 +102,12 @@ export default function Login() {
         setLoading(true);
         try {
             const res = await loginUser({ email, password });
-            // const res1= await loginUserID()
+
             console.log('Login success:', res.data);
             console.log('User ID from API:', res.data._id);
 
-            // Nếu cần lưu token hoặc user info:
-            // await AsyncStorage.setItem('token', res.data.token);
-    
-            // const { setEmail } = useUser();
-            // setEmail(email); // set context
             setContextEmail(email);
-            setIdUser(res.data._id); // <== Lưu idUser vào context
+            setIdUser(res.data._id); 
             setAvatar(res.data.avatar);
             setName(res.data.name);
             setFollowing(res.data.following);
@@ -132,18 +128,18 @@ export default function Login() {
     
 
     return (
-        <View style={styles.container}>
+        <View style={LoginStyle.container}>
             <Image 
                 source={require('../../assets/images/common/logo.png')}
-                style={styles.logo}
+                style={LoginStyle.logo}
                 resizeMode="contain"
             />
             
-            <Text style={styles.title}>Login your pretty account</Text>
-            <Text style={styles.subtitle}>Enter your email to sign up for this app</Text>
+            <Text style={LoginStyle.title}>Login your pretty account</Text>
+            <Text style={LoginStyle.subtitle}>Enter your email to sign up for this app</Text>
             
             <TextInput
-                style={styles.input}
+                style={LoginStyle.input}
                 placeholder="email@domain.com"
                 placeholderTextColor="#999"
                 keyboardType="email-address"
@@ -152,7 +148,7 @@ export default function Login() {
                 onChangeText={setEmail}
             />
             <TextInput
-                style={styles.input}
+                style={LoginStyle.input}
                 placeholder="your password"
                 placeholderTextColor="#999"
                 keyboardType="default"
@@ -163,12 +159,12 @@ export default function Login() {
             />
             
             <TouchableOpacity 
-                style={styles.continueButton} 
+                style={LoginStyle.continueButton} 
                 // onPress={handleContinue}
                 onPress={handleLogin}
                 disabled={loading}
             >
-                <Text style={styles.continueButtonText}>
+                <Text style={LoginStyle.continueButtonText}>
                     {loading ? 'Loading...' : 'Log In'}
                 </Text>
             </TouchableOpacity>
@@ -205,96 +201,3 @@ export default function Login() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        paddingHorizontal: 24,
-        paddingTop: 60,
-        alignItems: 'center',
-    },
-    logo: {
-        width: 300,
-        height: 100,
-        marginTop: 40,
-        marginBottom: 80,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: '600',
-        marginBottom: 8,
-    },
-    subtitle: {
-        fontSize: 16,
-        color: '#666',
-        marginBottom: 24,
-        textAlign: 'center',
-    },
-    input: {
-        width: '100%',
-        height: 50,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 8,
-        paddingHorizontal: 16,
-        fontSize: 16,
-        marginBottom: 16,
-    },
-    continueButton: {
-        width: '100%',
-        height: 55,
-        backgroundColor: '#000',
-        borderRadius: 8,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 24,
-    },
-    continueButtonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    orContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 24,
-        width: '100%',
-    },
-    orLine: {
-        flex: 1,
-        height: 1,
-        backgroundColor: '#ddd',
-    },
-    orText: {
-        marginHorizontal: 16,
-        color: '#666',
-    },
-    socialButton: {
-        width: '100%',
-        height: 50,
-        backgroundColor: '#f5f5f5',
-        borderRadius: 8,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 12,
-    },
-    socialIcon: {
-        marginRight: 12,
-    },
-    socialButtonText: {
-        fontSize: 16,
-        fontWeight: '500',
-    },
-    terms: {
-        fontSize: 14,
-        color: '#666',
-        textAlign: 'center',
-        marginTop: 200,
-    },
-    termsLink: {
-        color: '#000',
-        textDecorationLine: 'underline',
-    },
-}); 

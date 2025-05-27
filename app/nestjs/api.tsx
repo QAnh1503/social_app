@@ -1,28 +1,13 @@
 import axios from 'axios';
 
-//const API_URL = 'http://192.168.1.5:3000/'; 
-// const API_URL = "http://192.168.10.29:3000/"; // boyfr
-//const API_URL = "http://192.168.240.1:3000/"; // home
-// const API_URL = "http://172.21.64.1:3000/"; 
-//const API_URL = "http://192.168.1.168:3000/"; // anh kafe
-// const API_URL = "http://192.168.11.149:3000/"; 
+// [CAUTION]: You mustn't remove or change this line. You should go to ".env" file and replace value of EXPO_PUBLIC_API_URL
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+console.debug('[Api] server address', API_URL)
 
-
-const API_URL = "http://192.168.1.13:3000/";
-
-// ===== USER =====
-
-// export const loginUser = async (email, password) => {
-//   return await axios.post(`${API_URL}user/login`, { email, password });
-// };
-
+// USER
 export const loginUser = async (data: { email: string; password: string }) => {
   return await axios.post(`${API_URL}api/v2/users/login`, data);
 };
-
-// export const loginUserID = async (data: { id: number }) => {
-//   return await axios.post(`${API_URL}users/id`+data.id, data);
-// };
 
 export const getAll = async () => {
   return await axios.get(`${API_URL}api/v2/users/`);
@@ -63,16 +48,12 @@ export const updatePostCmt = async (data: { id: string, number_of_comments: numb
   return await axios.put(`${API_URL}api/v2/posts/${data.id}`, data);
 }
 
-// export const getAllPostWithIdUser = async (data: { user: string }) => {
-//   return await axios.get(`${API_URL}api/v2/posts?userId=${data.user}`);
-// }
 export const getAllPostWithIdUser = async (data: { user: string }) => {
   return await axios.get(`${API_URL}api/v2/posts/idUser/${data.user}`);
 }
 
 
 // ===== STORY =====
-
 export const getAllStory = async () => {
   return await axios.get(`${API_URL}api/v2/stories/`);
 }

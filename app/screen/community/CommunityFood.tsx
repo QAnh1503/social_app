@@ -63,7 +63,7 @@ function CommunityGroupDetails() {
         const enrichedQuestions = await Promise.all(
           questions.map(async (q: any) => {
             try {
-              const userRes = await getOneUserById({ idUser: q.idUser });
+              const userRes = await getOneUserById({ user: q.idUser });
               const user = userRes.data;
               return {
                 ...q,
@@ -102,7 +102,7 @@ function CommunityGroupDetails() {
           try {
               const res = await addQues({ 
                   question: comment,
-                  idUser: idUser,
+                  user: idUser,
                   tags: "Food"
               });
                   console.log("ADD QUESTION SUCCESSFULLY !")
