@@ -1,5 +1,5 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {FlatList, Image,ImageSourcePropType,Modal,
   SafeAreaView,
   StyleSheet,
@@ -51,18 +51,7 @@ function Followers() {
 
 
 
-
-    // const [selected, setSelected]= useState(1)
-    // const renderItem = (item: { item: { post: { image: ImageSourcePropType | undefined; }; }; }) => {
-    //     return (
-    //         <View>
-    //             <Image style= {{height: 130.9, width: 137}} source={item.item.post.image}/>
-    //         </View>
-    //     )
-    // }
-   
-    // console.log(selected)
-
+    // ===== FETCH FOLLOWERS =====
     const [followers, setFollowers] = useState<UserFollowerDetail[]>([]);
     const followersWithUserFollowerDetail:
     {
@@ -75,7 +64,6 @@ function Followers() {
     useEffect(() => {
         const fetchFollowers = async () => {
             try {
-                //console.log("aaaaaaaaaaaaaaaaaa")
                 const response = await getAllFollowersWithIdUser({user: idUser});
                 
                 const followersList = response.data
@@ -83,32 +71,25 @@ function Followers() {
 
                 //console.log("------------------FOLLOWER DETAILS-----------------");
                 for (const follower of followersList) {
-                    // const userResponse = await getOneUserById({ user: follower.userFollower });
-                    // const user_follower = userResponse.data;
-                    // console.log("user_follower: ",user_follower)
                     const userFollower = {
                         idFollower: follower._id,
                         idUserFollower: follower.userFollower._id,
-                        // nameFollower: user_follower.name,
-                        // avatarFollower: user_follower.avatar,
                         nameFollower: follower.userFollower.name,
                         avatarFollower: follower.userFollower.avatar,
-                        //idUser: user_follower.idUser,
                     };
 
                     followersWithUserFollowerDetail.push(userFollower);
-                    // console.log("aaaaaaaaaaaaaaaaa")
                 }
                 //console.log("✅ Followers with user info:", followersWithUserFollowerDetail);
                 setFollowers(followersWithUserFollowerDetail);
-                console.log("FETCH FOLLOWER",followers)
-
             } catch (error) {
                 console.error("Failed to fetch followers w id user:", error);
             }
         };
         fetchFollowers();
     }, []);
+
+    console.log("FETCH FOLLOWERS",followers)
     
     // ----- CLICK IN EACH FOLLOWER -----
     const clickAnyFolower = (follower: {
@@ -135,11 +116,13 @@ function Followers() {
                         });
 
                         const res = await checkIdUser_IdUserFollowing({
-                            idUser: idUser,  // người được theo dõi
+                            idUser: idUser,  
                             idUserFollowing: item.idUserFollower, // người đang theo dõi
                         });
-                        console.log("abcbkasbkajb")
-                        return { ...item, followed: res.data.exists };
+                       
+                        console.log("User", idUser, "follow", item.idUserFollower, ":", res.data);
+                        
+                        return { ...item, followed: res.data };
                     } catch (err) {
                         console.error("Error checking follow status", err);
                         return { ...item, followed: false }; // fallback nếu lỗi
@@ -153,11 +136,18 @@ function Followers() {
             fetchFollowStatus();
         }
     }, [followers]);
+   
 
     const [searchText, setSearchText] = useState('');
-    const filteredFollowers = followersWithStatus.filter(follower =>
-        follower.nameFollower.toLowerCase().includes(searchText.toLowerCase())
-    );
+    // const filteredFollowers = followersWithStatus.filter(follower =>
+    //     follower.nameFollower.toLowerCase().includes(searchText.toLowerCase())
+    // );
+    const filteredFollowers = useMemo(() => {
+        return followersWithStatus.filter(follower =>
+            follower.nameFollower.toLowerCase().includes(searchText.toLowerCase())
+        );
+    }, [followersWithStatus, searchText]);
+
 
 
 
@@ -197,9 +187,6 @@ function Followers() {
                     source={require("../../../../assets/images/image/searchIconOutline.png")}
                 />
                 <TextInput
-                    // placeholder="Search"
-                    // placeholderTextColor="#909090"
-                    // style={styles.search_outline_input}
                     placeholder="Search"
                     placeholderTextColor="#909090"
                     style={styles.search_outline_input}
@@ -209,8 +196,6 @@ function Followers() {
             </View>
             
                     <FlatList
-                        //data={followers}
-                        //data= {followersWithStatus}
                         data={filteredFollowers}
                         keyExtractor={(item) => item.idFollower.toString()}
                         contentContainerStyle={{
@@ -218,7 +203,6 @@ function Followers() {
                             borderTopEndRadius: 25,
                             borderTopStartRadius: 25,
                             paddingTop: 30,
-                            //paddingBottom: 20,
                         }}
                         renderItem={({ item }) => (
                             <View 
@@ -249,13 +233,6 @@ function Followers() {
                                     onPress={async () => {
                                         const updatedFollowed = !item.followed;
 
-                                        // setFollowersWithStatus(prev =>
-                                        //     prev.map(f =>
-                                        //         f.idFollower === item.idFollower
-                                        //         ? { ...f, followed: !f.followed }
-                                        //         : f
-                                        //     )
-                                        // );
                                         // Cập nhật UI ngay lập tức (tạm thời)
                                         setFollowersWithStatus(prev =>
                                             prev.map(f =>

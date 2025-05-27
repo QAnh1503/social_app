@@ -12,7 +12,7 @@ import { View, Platform, Text, Image, FlatList } from "react-native";
 // import { typeData, UserData } from "../../../utils/UserData";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { typeData } from "../../utils/UserData";
-import { addComment, getAllCommentWithIdPost, getAllPost, getOneUserById, updatePost, updatePostCmt } from "../../nestjs/api";
+import { addComment, addFollower, addFollowing, checkIdUser_IdUserFollowing, deleteFollowerByIdUserIdUserFollower, deleteFollowing, getAllCommentWithIdPost, getAllPost, getOnePostWithIdPost, getOneUserById, updatePost, updatePostCmt } from "../../nestjs/api";
 import {
   NavigationProp,
   RouteProp,
@@ -59,7 +59,7 @@ function PostListDetails() {
     const [nameRecent, setNameRecent] = useState('')
     const [avtRecent, setAvtRecent] = useState('')
     const idUserRecent= idUser;
-    console.log("idUserRecent: "+idUserRecent);
+    //console.log("idUserRecent: "+idUserRecent);
 
     // ----------- GET NAMERECENT, AVTRECENT FROM IDUSER -------------------
     useFocusEffect(
@@ -76,8 +76,8 @@ function PostListDetails() {
             };
             setNameRecent(user.name);
             setAvtRecent(user.avatar);
-            console.log("AVATAR USER RECENT: "+user.avatar)
-            console.log("NAME USER RECENT: "+user.name)
+            // console.log("AVATAR USER RECENT: "+user.avatar)
+            // console.log("NAME USER RECENT: "+user.name)
           
             } catch (err) {
             console.error("Lỗi khi lấy user recent:", err);
@@ -90,32 +90,57 @@ function PostListDetails() {
     console.log("\n")
 
     // ----------- INFORMATION OF EACH POST -------------------
-    //const navigation: NavigationProp<RootStackParamList> = useNavigation();
     type NavigationProps = StackNavigationProp<RootStackParamList>;
     const navigation = useNavigation<NavigationProps>();
 
     const route: RouteProp<RootStackParamList, "PostListDetails"> = useRoute();
 
     console.log("---------------- PARAMS ITEM OF PROFILE POST DETAIL --------");
-    //console.log(route.params.item)
-    const selectedItem = route.params.item;
-    console.log("SELECTED ITEM: ",selectedItem)
+    const selectedItem = route.params;
+    console.log("ID POST: ", selectedItem.idPost);
+    console.log("ID USER: ", selectedItem.idUser);
+    console.log("ISLIKE: ", selectedItem.isLike);
 
-    console.log("ID POST: " + selectedItem.idPost);
-    console.log("IMAGE POST: " + selectedItem.image);
-    console.log("DESCRIPTION: " + selectedItem.description);
-    console.log("TAGS: " + selectedItem.tags);
-    console.log("LIKES: " + selectedItem.likes);
-    console.log("NUMBER OF COMMENTS: " + selectedItem.number_of_comments);
-    console.log("CREATE_AT: " + selectedItem.created_at);
-    console.log("ID USER: " + selectedItem.idUser); // id of user create post
+
+    //const [likes, setLikes] = useState(0);
+    const [likeCount, setLikeCount] = useState(0); // bỏ likes
+    const [description, setDes] = useState("");
+    const [imgPost, setImgPost] = useState("");
+    const [tagsPost, setTagsPost] = useState("");
+    const [createdAtPost, setCreatedAtPost] = useState("");
     
-    // const create_atPost = formatDistanceToNow(new Date(selectedItem.created_at), {
-    //     addSuffix: true,
-    // });
-    // console.log(create_atPost);
-    console.log("")
+    useFocusEffect(
+        useCallback(() => {
+        const fetchPost = async () => {
+            try {
+            const res = await getOnePostWithIdPost({ idPost: selectedItem.idPost });
+            //console.log("DETAILS POST: ", res)
+            setLikeCount(res.data.likes)
+            setDes(res.data.description)
+            setImgPost(res.data.image)
+            setTagsPost(res.data.tags)
+            setCreatedAtPost(formatDistanceToNow(new Date(res.data.created_at), { addSuffix: true }))
+           
+            } catch (err) {
+            console.error("Lỗi khi lấy post:", err);
+            }
+        };
 
+        fetchPost(); // Đừng quên gọi hàm      
+        }, [selectedItem.idPost]) // thêm dependency để tránh warning
+    );
+
+    //console.log("SELECTED ITEM: ",selectedItem)
+
+    //console.log("ID POST: " + selectedItem.idPost);
+    // console.log("IMAGE POST: " + selectedItem.image);
+    // console.log("DESCRIPTION: " + selectedItem.description);
+    // console.log("TAGS: " + selectedItem.tags);
+    // console.log("LIKES: " + selectedItem.likes);
+    // console.log("NUMBER OF COMMENTS: " + selectedItem.number_of_comments);
+    // console.log("CREATE_AT: " + selectedItem.created_at);
+    // console.log("ID USER: " + selectedItem.idUser); // id of user create post
+    
 
     const [name, setName] = useState('')
     const [avatar, setAvatar] = useState('')
@@ -128,17 +153,12 @@ function PostListDetails() {
             const res = await getOneUserById({ user: selectedItem.idUser });
             const user = res.data;
 
-            const storyUser = {
-                name: user.name,
-                avatar: user.avatar,
-            };
             setName(user.name);
             setAvatar(user.avatar);
             //   console.log("with user info:", storyUser);
             console.log("AVATAR USER: "+user.avatar)
             console.log("NAME USER: "+user.name)
-            console.log("---------------------------------------------------------------")
-            console.log("")
+           
             } catch (err) {
             console.error("Lỗi khi lấy stories:", err);
             }
@@ -147,11 +167,10 @@ function PostListDetails() {
         fetchStories(); // Đừng quên gọi hàm      
         }, [selectedItem.idUser]) // thêm dependency để tránh warning
     );
-    
 
     
 
-    // ----------- UPLOAD COMMENT WITH COMMENT, IDPOST, IDUSER -------------------
+    // ----------- FETCH COMMENTS  -------------------
     const [cmtsUser, setCmtsUser] = useState<CommentUser[]>([]);
         const cmtsWithUser:
         {
@@ -170,18 +189,19 @@ function PostListDetails() {
                 const response = await getAllCommentWithIdPost({idPost: selectedItem.idPost})
                 const cmts = response.data;
     
-                console.log("------------------COMMENTS-----------------");
-                console.log(cmts);
+                // console.log("------------------COMMENTS-----------------");
+                // console.log(cmts);
     
-                console.log("------------------COMMENTS DETAILS-----------------");
+                //console.log("------------------COMMENTS DETAILS-----------------");
                 for (const cmt of cmts) {
-                    const userResponse = await getOneUserById({ user: cmt.idUser });
+                    const userResponse = await getOneUserById({ user: cmt.user._id });
                     const cmtUserr = userResponse.data;
                     const cmtUser= {
-                        idPost: cmt.idPost,
+                        idPost: cmt.post._id,
                         comment: cmt.comment,
-                        created_at: formatDistanceToNow(new Date(cmt.created_at), { addSuffix: true }),
-                        idUser: cmt.idUser, // id of user create comment
+                        created_at: new Date(cmt.created_at), // giữ nguyên kiểu Date để sort
+                        //created_at: formatDistanceToNow(new Date(cmt.created_at), { addSuffix: true }),
+                        idUser: cmt.user._id, // id of user create comment
                         name: cmtUserr.name,
                         avatar: cmtUserr.avatar,
                     }
@@ -189,7 +209,10 @@ function PostListDetails() {
                 cmtsWithUser.push(cmtUser);
                 }
     
-            console.log("✅ Comments with user info:", cmtsWithUser);
+            // ✅ Sắp xếp theo thời gian giảm dần (mới nhất lên đầu)
+            cmtsWithUser.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
+
+            //console.log("✅ Comments with user info:", cmtsWithUser);
             setCmtsUser(cmtsWithUser);
           } catch (error) {
             console.error("❌ Failed to fetch posts:", error);
@@ -199,14 +222,14 @@ function PostListDetails() {
         fetchCmts();
     }, [trigger]);
    
-   // -------------------- UPLOAD CMT -------------------------
+   // -------------------- UPLOAD COMMENT WITH COMMENT, IDPOST, IDUSER-------------------------
     const [comment, setComment] = useState('')
     const upLoatCmt = async () => {
         try {
             const res = await addComment({ 
                 comment,
                 idPost: selectedItem.idPost,
-                user: idUser
+                idUser: idUser
             });
                 console.log("UPLOAD COMMENT SUCCESSFULLY !")
                 setComment('')
@@ -218,18 +241,16 @@ function PostListDetails() {
                     number_of_comments: cmtsUser.length + 1
                 });
             } catch (err) {
-            console.error("Lỗi khi lấy stories:", err);
+            console.error("Error when upload cmt:", err);
         }
     };
 
     // ------------------- HANDLE LIKES ------------------------
-    const [isLiked, setIsLiked] = useState(false); // Mặc định là chưa like
-    const [likeCount, setLikeCount] = useState(selectedItem.likes); // Thêm state đếm like
-
+    const [isLiked, setIsLiked] = useState(selectedItem.isLike);
     const handleLike = async (postId: string) => {
         let newLikeCount = likeCount;
 
-         if (!isLiked) {
+        if (!isLiked) {
             newLikeCount += 1;
             setIsLiked(true);
         } else {
@@ -244,8 +265,30 @@ function PostListDetails() {
         console.log("UPDATE LIKES SUCCESSFULLY !!!")
     };
     
-    const scrollViewRef = useRef<ScrollView>(null);;
+    // ----- FOLLOW STATUS -----
+    const [isFollowed, setIsFollowed] = useState(false);
 
+    useEffect(() => {
+        const fetchFollowStatus = async () => {
+            try {
+                const res = await checkIdUser_IdUserFollowing({
+                    idUser: idUser,  
+                    idUserFollowing: selectedItem.idUser, // người được theo dõi
+                });
+                console.log("User", idUser, "follow", selectedItem.idUser, ":", res.data);
+                setIsFollowed(res.data); // gán true/false từ API
+            } catch (err) {
+                console.error("Error checking follow status", err);
+                setIsFollowed(false); // fallback nếu lỗi
+            }
+        };
+
+        fetchFollowStatus(); // 👈 đừng quên gọi
+    }, [idUser, selectedItem.idUser]); // 👈 thêm dependency khi id thay đổi
+
+   
+
+    const scrollViewRef = useRef<ScrollView>(null);;
 
     return (
         <ScrollView 
@@ -290,13 +333,93 @@ function PostListDetails() {
                                     source={require("../../../assets/images/image/profile_user/add_post_story/right-arrow.png")}
                                 />
                                 <Text style= {{fontSize: 18, marginLeft: 2, fontWeight: 500, marginRight: 5, color: "#999"}}>
-                                    in {selectedItem.tags}
+                                    in {tagsPost}
                                 </Text>
-                                <TouchableOpacity style= {{backgroundColor: "#000", borderRadius: 10, right: 0, position: "absolute"}}>
-                                    <Text style= {{color: "#fff", padding: 7, paddingHorizontal: 15, fontSize: 17}}>Follow</Text>
-                                </TouchableOpacity>
+
+                                {selectedItem.idUser !== idUser && (
+                                    <TouchableOpacity
+                                        onPress={async () => {
+                                            const updatedFollowed = !isFollowed;
+
+                                            if (isFollowed===true)
+                                            {
+                                                try {
+                                                    // xóa đi người mình đang follow trong list following của mình
+                                                    await deleteFollowing({
+                                                        idUser: idUser,
+                                                        idUserFollowing: selectedItem.idUser,
+                                                    });
+                                                    console.log("DELETE FOLLOWING SUCCESSFULLY !");
+                                                    } catch (error) {
+                                                    console.error("Failed to delete user following:", error);
+                                                }
+                                                try {
+                                                    // xóa đi follower (là mình) trong list follower của người ta
+                                                    // console.log("idUser need delete in follower: ",selectedItem.idUser )
+                                                    // console.log("idUserFollower need delete in follower: ",idUser)
+                                                    await deleteFollowerByIdUserIdUserFollower({
+                                                        idUser: selectedItem.idUser,
+                                                        idUserFollower: idUser,
+                                                    });
+                                                    console.log("DELETE FOLLOWER SUCCESSFULLY !");
+                                                    } catch (error) {
+                                                    console.error("Failed to delete user follower:", error);
+                                                }
+                                                
+                                            }
+                                            else {
+                                                // Nếu chưa theo dõi → nhấn sẽ theo dõi
+                                                try {
+                                                    // thêm người trong list following của mình
+                                                    await addFollowing({
+                                                        user: idUser,
+                                                        userFollowing: selectedItem.idUser,
+                                                        nameUserFollowing: name, 
+                                                    });
+                                                    console.log("ADD FOLLOWING SUCCESSFULLY!");
+                                                    } catch (error) {
+                                                    console.error("Failed to follow:", error);
+                                                    }
+                                                    
+                                                try {
+                                                    // thêm follower (là mình) vào trong danh sách follower của người ta
+                                                    await addFollower({
+                                                        idUserFollower: idUser,
+                                                        nameUserFollower: nameRecent,
+                                                        idUser: selectedItem.idUser, 
+                                                    });
+                                                    console.log("ADD FOLLOWER SUCCESSFULLY!");
+                                                    } catch (error) {
+                                                    console.error("Failed to follow:", error);
+                                                }
+                                            }
+                                            // ✅ Cập nhật lại UI
+                                            setIsFollowed(updatedFollowed);
+                                        }}
+                                                            
+                                        style={{
+                                            backgroundColor: isFollowed ? "#fff" : "#000",
+                                            borderRadius: 10,
+                                            right: 0,
+                                            position: "absolute",
+                                            borderWidth: 1,
+                                            borderColor: "#000",
+                                        }}
+                                        >
+                                        <Text
+                                            style={{
+                                            color: isFollowed ? "#000" : "#fff",
+                                            padding: 7,
+                                            paddingHorizontal: 15,
+                                            fontSize: 17,
+                                            }}
+                                        >
+                                            {isFollowed ? "Followed" : "Follow"}
+                                        </Text>
+                                    </TouchableOpacity>
+                                )}
                             </View>
-                            <Text style= {{color: "#ccc", fontSize: 16, marginLeft: 15}}>{selectedItem.created_at}</Text>
+                            <Text style= {{color: "#ccc", fontSize: 16, marginLeft: 15}}>{createdAtPost}</Text>
                             {/* <Text style= {{color: "#ccc", fontSize: 17, marginLeft: 18, fontFamily: "serif",}}>What's News ?</Text> */}
                         </View>
                     </View>
@@ -306,9 +429,9 @@ function PostListDetails() {
             {/* ======  CONTENT ====== */}
             <View style= {{marginHorizontal: 15}}>
                 <Text style= {{fontSize: 18, marginLeft: 3, marginTop: 7, fontWeight: 400, marginRight: 5,}}>
-                    {selectedItem.description}
+                    {description}
                 </Text>
-                <Image style={{ height: 400, width: "100%", marginBottom: 3, marginRight: 3, marginTop: 12, borderRadius: 10}} source={{ uri: selectedItem.image }} />
+                <Image style={{ height: 400, width: "100%", marginBottom: 3, marginRight: 3, marginTop: 12, borderRadius: 10}} source={{ uri: imgPost }} />
                 
                 {/* === LIKES, CMTS, SHARE === */}
                 <View style= {{marginTop: 15, flexDirection: "row", alignItems: "center"}}>
@@ -362,29 +485,16 @@ function PostListDetails() {
                                         <Text style= {{fontSize: 18, marginLeft: 10, fontWeight: 500, marginRight: 5,}}>
                                             {item.name}
                                         </Text>
-                                        <Text style= {{color: "#ccc", fontSize: 16, marginLeft: 5}}>{item.created_at}</Text>
+                                        <Text style= {{color: "#ccc", fontSize: 16, marginLeft: 5}}>
+                                            {/* {item.created_at} */}
+                                            {formatDistanceToNow(new Date(item.created_at), { addSuffix: true })}
+                                        </Text>
                                     </View>
                                 </View>
                                 <Text style= {{fontSize: 18, marginLeft: 15,  fontWeight: 400, marginRight: 5, maxWidth: 309}}>
                                     {item.comment}
                                 </Text>
-                                {/* <View style= {{marginTop: 12,marginLeft: 15, flexDirection: "row", alignItems: "center"}}>
-                                    <View style= {{flexDirection: "row", marginRight: 30}}>
-                                        <Image style={{ height: 20, width: 20, }} source={require("../../../assets/images/image/profile_user/profile_post_detail/heart-outline.png")} />
-                                        <Text style= {{fontSize: 18, marginLeft: 4,  fontWeight: 400, marginRight: 5,}}>
-                                            {selectedItem.likes}
-                                        </Text>
-                                    </View>
-                                    <View style= {{flexDirection: "row", marginRight: 30}}>
-                                        <Image style={{ height: 22, width: 22,  }} source={require("../../../assets/images/image/profile_user/profile_post_detail/comment.png")} />
-                                        <Text style= {{fontSize: 18, marginLeft: 4,  fontWeight: 400, marginRight: 5,}}>
-                                            {selectedItem.number_of_comments}
-                                        </Text>
-                                    </View>
-                                    <View style= {{flexDirection: "row", marginRight: 30}}>
-                                        <Image style={{ height: 20, width: 20,  }} source={require("../../../assets/images/image/profile_user/profile_post_detail/share.png")} />
-                                    </View>                    
-                                </View> */}
+                               
                             </View>
                         </View>
                         </View>
@@ -441,9 +551,6 @@ function PostListDetails() {
                 </View>
             </View>
         </ScrollView>
-        // <View>
-        //     <Text>hiiiiiiiiiiiiiiiiiiiiiiiiiiiiii</Text>
-        // </View>
     );
 }
 

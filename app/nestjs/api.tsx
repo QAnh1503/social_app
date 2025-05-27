@@ -36,7 +36,11 @@ export const getAllPost = async () => {
   return await axios.get(`${API_URL}api/v2/posts/`);
 }
 
-export const addPost = async (data: { description: string; image: string; tags: string; user: string }) => {
+export const getOnePostWithIdPost = async (data: { idPost: string }) => {
+  return await axios.get(`${API_URL}api/v2/posts/${data.idPost}`);
+};
+
+export const addPost = async (data: { description: string; image: string; tags: string; idUser: string }) => {
   return await axios.post(`${API_URL}api/v2/posts/post`, data);
 }
 
@@ -64,7 +68,7 @@ export const addStory = async (data: { content: string; image: string; user: str
 
 
 // ===== COMMENT =====
-export const addComment = async (data: { comment: string; idPost: string; user: string }) => {
+export const addComment = async (data: { comment: string; idPost: string; idUser: string }) => {
   return await axios.post(`${API_URL}api/v2/comments/comment`, data);
 }
 
@@ -97,7 +101,7 @@ export const checkIdUser_IdUserFollower = async (data: {idUser: string; idUserFo
 }
 
 export const deleteFollowerByIdUserIdUserFollower = async (data: { idUser: string; idUserFollower: string}) => {
-  return await axios.delete(`${API_URL}followers/delete/${data.idUser}/${data.idUserFollower}`);
+  return await axios.delete(`${API_URL}api/v2/followers/delete/${data.idUser}/${data.idUserFollower}`);
 }
 
 
@@ -118,11 +122,11 @@ export const addFollowing = async (data: { userFollowing: string; nameUserFollow
 //   return await axios.delete(`${API_URL}api/v2/following/${id}`);
 // }
 export const deleteFollowing = async (data: { idUser: string; idUserFollowing: string}) => {
-  return await axios.delete(`${API_URL}following/${data.idUser}/${data.idUserFollowing}`);
+  return await axios.delete(`${API_URL}api/v2/following/${data.idUser}/${data.idUserFollowing}`);
 }
 
 export const checkIdUser_IdUserFollowing = async (data: {idUser: string; idUserFollowing: string}) => {
-  return await axios.get(`${API_URL}following/exists/${data.idUser}/${data.idUserFollowing}`);
+  return await axios.get(`${API_URL}api/v2/following/exists/${data.idUser}/${data.idUserFollowing}`);
 }
 
 
