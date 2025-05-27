@@ -16,10 +16,12 @@ import {
 import LikeIcon from "../../../assets/images/home/likeIcon.svg";
 import LikedIcon from "../../../assets/images/home/likedIcon.svg";
 import CommentIcon from "../../../assets/images/home/commentIcon.svg";
-import { getAllCommentWithIdPost, getAllPost, getOneUserById, updatePost } from "../../nestjs/api";
+import { getAllCommentWithIdPost, getAllPost, getOneUserById, getPostAdvices, updatePost } from "../../nestjs/api";
 
 import { formatDistanceToNow } from "date-fns";
 import { NavigationProp, useFocusEffect, useNavigation } from "@react-navigation/native";
+import Stories from "../../components/dashboard/story/Stories";
+const AiLogo = require('../../../assets/images/aiLogo.png')
 
 
 type PostUser = {
@@ -43,13 +45,14 @@ type PostUser = {
 function PostList() {
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
 
-  //console.log("THIS IS POST LIST");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [advices, setAdvices] = useState<any[] | null>(null);
 
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
   
 
-  //====================== FETCH POSTS =======================
+  //
+  ================== FETCH POSTS =======================
   const [postsUser, setPostsUser] = useState<PostUser[]>([]);
   // const postsWithUser:
   //   | ((prevState: PostUser[]) => PostUser[])
@@ -222,7 +225,7 @@ function PostList() {
 
     const updatedLiked = !currentPost.isLiked;
     const updatedLikesCount = currentPost.likesCount + (updatedLiked ? 1 : -1);
-
+    
     const updatedPost = {
       id: postId,
       likes: updatedLikesCount,
@@ -251,14 +254,120 @@ function PostList() {
   };
 
 
-  const [numColumns, setNumColumns] = useState(1); 
+  const [postsUser, setPostsUser] = useState<PostUser[]>([]);
+  const postsWithUser:
+    | ((prevState: PostUser[]) => PostUser[])
+    | {
+      idPost: any;
+      image: any;
+      idUser: any;
+      name: any;
+      avatar: any;
+      likes: number;
+      number_of_comments: any;
+      description: any;
+      tags: any;
+      created_at: any;
+
+      isLiked: any;
+      likesCount: any;
+    }[] = [];
+
+  // useEffect(() => {
+  useFocusEffect(
+    useCallback(() => {
+      const fetchPosts = async () => {
+        try {
+          const response = await getAllPost();
+          const posts = response.data;
+          const captions: string[] = [];
+
+          console.log("------------------POST-----------------");
+          console.log("FETCH POSTS: ", posts)
+          // const postsWithUser = [];
+
+          if (postsWithUser.length > -1)
+            postsWithUser.slice(postsWithUser.length, 1)
+          console.log("------------------POST DETAILS-----------------");
+
+          for (const post of posts) {
+            // const userResponse = await getOneUserById({ idUser: post.idUser });
+            // const user = userResponse.data;
+            const cmtResponse = await getAllCommentWithIdPost({ idPost: post._id });
+
+            let postUser = {
+              idPost: post._id,
+              image: post.image,
+              likes: post.likes,
+              // number_of_comments: post.number_of_comments,
+              number_of_comments: cmtResponse.data.length,
+              description: post.description,
+              tags: post.tags,
+              // created_at: post.created_at,
+              created_at: formatDistanceToNow(new Date(post.created_at), { addSuffix: true }),
+
+              idUser: post.idUser,
+              name: post.user.name,
+              avatar: post.user.avatar,
+              isLiked: false, // thêm
+              likesCount: post.likes, // thêm,
+            };
+
+            captions.push(post.description)
+            postsWithUser.push(postUser);
+          }
+
+
+
+          fetchGetAdvices(captions)
+          // responseAdvices.data.questions.forEach((element: any, index: any) => {
+          // })
+          console.log(' = = = = = = = = = ')
+          console.log("/////////////////HIIIIIII============");
+          console.log("✅ Posts with user info:", postsWithUser);
+          setPostsUser(postsWithUser);
+        } catch (error) {
+          console.error("❌ Failed to fetch posts:", error);
+        }
+      };
+
+      fetchPosts();
+      // fetchGetAdvices();
+    }, []));
+
+
+  const fetchGetAdvices = async (captions: string[]) => {
+    // const captions: string[] = []
+    for (const post of postsWithUser) {
+      captions.push(post.description)
+    }
+
+
+    const responseAdvices = await getPostAdvices(captions);
+
+    console.log('[PostList] = = = response Advices = = =')
+    console.log(responseAdvices.data.questions);
+
+    setAdvices(responseAdvices.data.questions);
+    console.log('abc')
+  }
+
+  const [numColumns, setNumColumns] = useState(1);
 
   return (
     <>
+      <TouchableOpacity
+        style={{ width: 60, height: 60, borderRadius: 10000, padding: 10, backgroundColor: '#FFF2EB', position: "absolute", zIndex: 100, right: 20, bottom: 60 }}
+        onPress={() => {navigation.navigate('ChatBot', {backgroundInfo: '', question: ''})}}
+      >
+        <Image style={{ width: 40, height: 40, borderRadius: 100 }} source={AiLogo}></Image>
+      </TouchableOpacity>
       <FlatList
         key={numColumns} // 💡 Thêm dòng này
         data={postsUser}
-        renderItem={({ item }: { item: any }) => (
+        ListHeaderComponent={<Stories />}
+        contentContainerStyle={{ paddingBottom: 40 }}
+        renderItem={({ item, index }) => (
           <View style={styles.postContainer}>
             {/* <Modal
             animationType="fade"
@@ -333,13 +442,14 @@ function PostList() {
                 <Text style={styles.statText}>{item.likesCount} likes</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity 
-                onPress={() => 
-                  //navigation.navigate("PostListDetails", {item})
-                  navigation.navigate("PostListDetails", { idPost: item.idPost , idUser: item.idUser, isLike: item.isLiked})
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("PostListDetails", { item })
+                  //Use this line if we get any error with above line
+                  //navigation.navigate("PostListDetails", { idPost: item.idPost , idUser: item.idUser, isLike: item.isLiked})
                 }
-                
-                style={styles.statButton} 
+
+                style={styles.statButton}
               >
                 <CommentIcon width={24} height={24} />
                 <Text style={styles.statText}>
@@ -347,6 +457,30 @@ function PostList() {
                 </Text>
               </TouchableOpacity>
             </View>
+            <ScrollView
+              horizontal={true}
+              style={{ paddingStart: 20, paddingTop: 10 }}
+              contentContainerStyle={{}}
+            >
+              {
+                (advices) ? advices.at(index).map((element: any) => {
+                  console.log(element)
+                  return (
+                    <TouchableOpacity
+                    onPress={() => {navigation.navigate('ChatBot', {backgroundInfo: `this is a post in a social media with these infomation:\n Username: ${item.name}\nPost at time: ${item.created_at}\nCaption (content of post): ${item.description}\nLikes:${item.likes}\ncomments number: ${item.number_of_comments}`, question: element.question})}}
+                    >
+                      <View
+                        style={{ borderRadius: 30, borderWidth: 2, padding: 10, marginRight: 10 }}
+                      >
+                        <Text>{element.question}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  )
+                }) : <></>
+              }
+              <View style={{ width: 40, height: 1 }}></View>
+            </ScrollView>
           </View>
         )}
         keyExtractor={(item) => item.idPost.toString()}

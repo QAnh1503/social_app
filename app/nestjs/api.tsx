@@ -38,7 +38,6 @@ export const getAllPost = async () => {
 
 export const getOnePostWithIdPost = async (data: { idPost: string }) => {
   return await axios.get(`${API_URL}api/v2/posts/${data.idPost}`);
-};
 
 export const addPost = async (data: { description: string; image: string; tags: string; idUser: string }) => {
   return await axios.post(`${API_URL}api/v2/posts/post`, data);
@@ -197,4 +196,22 @@ export const getConversations = async (idUser: any) => {
 
 export const addCoins = async (idUser: any, itemType: any) => {
   return await axios.get(`${API_URL}api/v2/momo/getPayment/${idUser}/${itemType}`)
+}
+
+//= = = = = AI = = = = =
+export const getPostAdvices = async (captions: string[]) => {
+  return await axios.post(`${API_URL}api/v2/llm/advices`, {captions: captions})
+}
+
+export const getAiChat = async (history: any[], message: string) => {
+  return await axios.post(`${API_URL}api/v2/llm/chat`, {history: history, content: message})
+}
+
+export const getLearnMorePost = async (backgroundInfo: string, question: string) => {
+  return await axios.post(`${API_URL}api/v2/llm/learnmore`, {backgroundInfo: backgroundInfo, question: question})
+}
+
+export const getSumaryConversation = async (conversation: any[]) => {
+  console.log('umg2')
+  return await axios.post(`${API_URL}api/v2/llm/sumary`, {conversation: conversation})
 }

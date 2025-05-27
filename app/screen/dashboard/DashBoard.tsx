@@ -14,7 +14,7 @@ const fetchUserData = () => {
     }
 }
 
-const fetchNewsfeedData = () =>  {
+const fetchNewsfeedData = () => {
     return DUMMY_POSTS
 }
 
@@ -31,24 +31,10 @@ const DashBoard = () => {
 
 
     return (
-        <View style={{backgroundColor: '#fff'}}>
-            <DashboardHeader unreadNotification={userData.unreadNotification}/>
-            <ScrollView style={{
-                //flex: 1,
-                marginTop: 7,
-                marginBottom: 50
-            }}>
-                <Stories />
-                
-                {/* {{{{{{{{{{{{{{{{{{{{{{{{{{{{
-                <PostList postList={newsfeedData} />
-                }}}}}}}}}}}}}}}}}}}}}}}}}}}} */}
-                <PostList/>
-
-                <View style={{ justifyContent: 'flex-end', flex: 1 }}>
-
-                </View>
-            </ScrollView>
+        <View style={{ backgroundColor: '#fff' }}>
+            <DashboardHeader unreadNotification={userData.unreadNotification} />
+            <PostList />
+            <View style={{ justifyContent: 'flex-end', flex: 1 }}></View>
         </View>
 
     )

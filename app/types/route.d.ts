@@ -9,6 +9,8 @@ type RootStackParamList = {
     Login: undefined;
     Register: undefined;
 
+    ChatBot: {backgroundInfo: string, question: string} 
+
     Payment: {};
     // chat: {
     //   name: string;

@@ -77,7 +77,13 @@ export default function Chats() {
 
       <ScrollView>
         {(messages.length != 0) ?
-          messages.map((element, index) => { return (<ChatItem key={index} receiverId={element.lastMessage.receiverId} name={element.userId} lastMessage={element.lastMessage.content} time='' />) })
+          messages.map((element, index) => { return (
+          <ChatItem
+            key={index}
+            receiverId={(element.lastMessage.receiverId != idUser) ? element.lastMessage.receiverId : element.lastMessage.senderId}
+            name={element.userId}
+            lastMessage={element.lastMessage.content} time='' 
+          />) })
           : (<View><Text>Nothing here</Text></View>)}
       </ScrollView>
     </View>
