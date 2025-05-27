@@ -18,11 +18,6 @@ import Register from './app/screen/Register';
 import { UserProvider } from './app/screen/UserContext';
 import { SocketProvider } from './app/context/SocketContext';
 
-export const FIREBASE_APP = initializeApp(firebaseConfig);
-export const FIREBASE_AUTH = getAuth(FIREBASE_APP);
-export const FIREBASE_DB = getFirestore(FIREBASE_APP);
-export const FIREBASE_ANALYTICS = getAnalytics(FIREBASE_APP);;
-
 export type RootStackParamList = {
   Dashboard: undefined
   //Dashboard: { email: string }; // <-- thêm email
@@ -43,6 +38,7 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function App() {
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       {/* <UserProfile/> */}

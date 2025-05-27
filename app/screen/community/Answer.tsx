@@ -12,7 +12,7 @@ import { View, Platform, Text } from "react-native";
 import { useUser } from "../UserContext";
 import { useCallback, useEffect, useState } from "react";
 import {
-    addAns,
+  addAns,
   getAllAnsWithQuestionId,
   // getAllAnsWithIdQues,
   getAllQuesWithTags,
@@ -34,7 +34,7 @@ interface AnswerWithUser {
   idUser: number;
   name: string;
   avatar: string;
-//   created_at_Ques: string;
+  //   created_at_Ques: string;
 }
 
 function Answer() {
@@ -56,86 +56,82 @@ function Answer() {
   console.log("TAGS: " + selectedItem.tags);
   console.log("USER NAME: " + selectedItem.userName);
   console.log("AVATAR: " + selectedItem.avatar);
-console.log("CREATED AT QUESTION: " + selectedItem.created_at);
+  console.log("CREATED AT QUESTION: " + selectedItem.created_at);
 
- 
   const [answersWithUser, setAnswerWithUser] = useState<AnswerWithUser[]>([]);
 
-//   useFocusEffect(
-//     useCallback(() => {
 
-    // ===== FETCH ANSWER W/ ID QUES =====
-      const fetchUsers = async () => {
-        try {
-          const response = await getAllAnsWithQuestionId({
-            question: selectedItem._id,
-          });
-          const ans = response.data;
+  const fetchUsers = async () => {
+    try {
+      const response = await getAllAnsWithQuestionId({
+        question: selectedItem._id,
+      });
+      const ans = response.data;
 
-          // Map qua từng question để lấy thêm thông tin user
-          const enrichedAnswers = await Promise.all(
-            ans.map(async (answer: any) => {
-              try {
-                const userRes = await getOneUserById({ user: answer.user._id });
-                const user = userRes.data;
-                return {
-                  ...answer,
-                  name: user.name,
-                  avatar: user.avatar,
-                  created_at_raw: answer.created_at, // giữ lại để sort
-                   created_at: formatDistanceToNow(new Date(answer.created_at), { addSuffix: true }),
-                };
-              } catch (err) {
-                console.error("Lỗi khi lấy user:", err);
-                return {
-                  ...answer,
-                  name: "Unknown",
-                  avatar: null,
-                  created_at_raw: answer.created_at, // giữ lại để sort
-                };
-              }
-            })
-          );
+      // Map qua từng question để lấy thêm thông tin user
+      const enrichedAnswers = await Promise.all(
+        ans.map(async (answer: any) => {
+          try {
+            const userRes = await getOneUserById({ user: answer.user._id });
+            const user = userRes.data;
+            return {
+              ...answer,
+              name: user.name,
+              avatar: user.avatar,
+              created_at_raw: answer.created_at, // giữ lại để sort
+              created_at: formatDistanceToNow(new Date(answer.created_at), { addSuffix: true }),
+            };
+          } catch (err) {
+            console.error("Lỗi khi lấy user:", err);
+            return {
+              ...answer,
+              name: "Unknown",
+              avatar: null,
+              created_at_raw: answer.created_at, // giữ lại để sort
+            };
+          }
+        })
+      );
 
-          const sortedAnswers = enrichedAnswers.sort(
-            (a, b) => new Date(b.created_at_raw).getTime() - new Date(a.created_at_raw).getTime()
-          );
+      const sortedAnswers = enrichedAnswers.sort(
+        (a, b) => new Date(b.created_at_raw).getTime() - new Date(a.created_at_raw).getTime()
+      );
 
-          setAnswerWithUser(sortedAnswers);
-          //console.log("ANSWERS W USERS ", answersWithUser);
-        } catch (error) {
-          console.error("❌ Failed to fetch users:", error);
-        }
-      };
+      setAnswerWithUser(sortedAnswers);
+      //console.log("ANSWERS W USERS ", answersWithUser);
+    } catch (error) {
+      console.error("❌ Failed to fetch users:", error);
+    }
+  };
 
-//       fetchUsers();
-//     }, [selectedItem.idQues])
-//   );
+  //       fetchUsers();
+  //     }, [selectedItem.idQues])
+  //   );
 
   useFocusEffect(
-  useCallback(() => {
-    fetchUsers();
-  }, [selectedItem.idQues])
-);
+    useCallback(() => {
+      fetchUsers();
+    }, [selectedItem.idQues])
+  );
 
 
   const [comment, setComment] = useState('')
-        const upLoatCmt = async () => {
-            try {
-                const res = await addAns({ 
-                    answer: comment,
-                    user: idUser,
-                    question: selectedItem._id
-                });
-                    console.log("ADD ANSWER SUCCESSFULLY !")
-                    setComment('')
-                    await fetchUsers(); 
-                    // await fetchQuestionsWithUser(); 
-                    
-                } catch (err) {
-                console.error("Error when upload ans:", err);
-            }
-        };
+  const upLoatCmt = async () => {
+    try {
+      const res = await addAns({
+        answer: comment,
+        user: idUser,
+        question: selectedItem._id
+      });
+      console.log("ADD ANSWER SUCCESSFULLY !")
+      setComment('')
+      await fetchUsers();
+      // await fetchQuestionsWithUser(); 
+
+    } catch (err) {
+      console.error("Error when upload ans:", err);
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>

@@ -18,19 +18,18 @@ type ChatItemProps = {
 };
 
 export default function ChatItem({ lastMessage, receiverId, time, avatar }: ChatItemType) {
-  // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const navigation: NavigationProp<RootStackParamList> = useNavigation();
   const [receiver, setReceiver] = useState<any>(null);
 
-
   const handlePress = () => {
-    console.log('ttargetId', receiverId)
+    console.debug('[ChatItem] navigate to Message with receveiverId = ', receiver)
     navigation.navigate('Message', {targetId: receiverId});
   };
 
   const fetchReceiverData = async () => {
-    const receiver = await getOneUserById({idUser: receiverId});
+    const receiver = await getOneUserById({user: receiverId});
 
+    console.debug('[ChatItem] Receiver data: ', receiver.data)
     if (receiver) setReceiver(receiver.data);
   }
 

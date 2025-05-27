@@ -67,7 +67,7 @@ function PostListDetails() {
         const fetchUserRecent = async () => {
             try {
             // Giả sử selectedItem được truyền từ props hoặc state
-            const res = await getOneUserById({ idUser: idUserRecent });
+            const res = await getOneUserById({ user: idUserRecent });
             const user = res.data;
 
             const userRecent = {
@@ -125,7 +125,7 @@ function PostListDetails() {
         const fetchStories = async () => {
             try {
             // Giả sử selectedItem được truyền từ props hoặc state
-            const res = await getOneUserById({ idUser: selectedItem.idUser });
+            const res = await getOneUserById({ user: selectedItem.idUser });
             const user = res.data;
 
             const storyUser = {
@@ -175,7 +175,7 @@ function PostListDetails() {
     
                 console.log("------------------COMMENTS DETAILS-----------------");
                 for (const cmt of cmts) {
-                    const userResponse = await getOneUserById({ idUser: cmt.idUser });
+                    const userResponse = await getOneUserById({ user: cmt.idUser });
                     const cmtUserr = userResponse.data;
                     const cmtUser= {
                         idPost: cmt.idPost,
@@ -206,7 +206,7 @@ function PostListDetails() {
             const res = await addComment({ 
                 comment,
                 idPost: selectedItem.idPost,
-                idUser
+                user: idUser
             });
                 console.log("UPLOAD COMMENT SUCCESSFULLY !")
                 setComment('')
@@ -214,7 +214,7 @@ function PostListDetails() {
 
                 // Cập nhật DB (nếu cần thiết)
                 await updatePostCmt({
-                    idPost: selectedItem.idPost,
+                    id: selectedItem.idPost,
                     number_of_comments: cmtsUser.length + 1
                 });
             } catch (err) {
@@ -238,7 +238,7 @@ function PostListDetails() {
         }
         setLikeCount(newLikeCount); // Cập nhật hiển thị giao diện
         const res = await updatePost({
-            idPost: selectedItem.idPost,
+            id: selectedItem.idPost,
             likes: newLikeCount
         })
         console.log("UPDATE LIKES SUCCESSFULLY !!!")

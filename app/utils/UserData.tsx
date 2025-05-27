@@ -164,7 +164,7 @@ export const useStoryData = () => {
 
                 console.log("------------------POST DETAILS-----------------");
                     for (const story of stories) {
-                        const storyResponse = await getOneUserById({ idUser: story.idUser });
+                        const storyResponse = await getOneUserById({ user: story.idUser });
                         const user = storyResponse.data;
                 
                         const storyUser = {
