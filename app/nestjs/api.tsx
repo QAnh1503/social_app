@@ -38,6 +38,7 @@ export const getAllPost = async () => {
 
 export const getOnePostWithIdPost = async (data: { idPost: string }) => {
   return await axios.get(`${API_URL}api/v2/posts/${data.idPost}`);
+}
 
 export const addPost = async (data: { description: string; image: string; tags: string; idUser: string }) => {
   return await axios.post(`${API_URL}api/v2/posts/post`, data);

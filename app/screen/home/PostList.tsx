@@ -47,172 +47,90 @@ function PostList() {
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [advices, setAdvices] = useState<any[] | null>(null);
-
-  const [isImageModalVisible, setIsImageModalVisible] = useState(false);
-  
-
-  //
-  ================== FETCH POSTS =======================
   const [postsUser, setPostsUser] = useState<PostUser[]>([]);
-  // const postsWithUser:
-  //   | ((prevState: PostUser[]) => PostUser[])
-  //   | {
-  //       idPost: any;
-  //       image: any;
-  //       idUser: any;
-  //       name: any;
-  //       avatar: any;
-  //       likes: number;
-  //       number_of_comments: any;
-  //       description: any;
-  //       tags: any;
-  //       created_at: any;
+  const postsWithUser:
+    | ((prevState: PostUser[]) => PostUser[])
+    | {
+      idPost: any;
+      image: any;
+      idUser: any;
+      name: any;
+      avatar: any;
+      likes: number;
+      number_of_comments: any;
+      description: any;
+      tags: any;
+      created_at: any;
 
-  //       isLiked: any;
-  //       likesCount: any;
-  //     }[] = [];
+      isLiked: any;
+      likesCount: any;
+    }[] = [];
 
   const [skipFetch, setSkipFetch] = useState(false);
   useFocusEffect(
-  useCallback(() => {
-    if (skipFetch) {
-      console.log("⏭ Skip fetching posts...");
-      return;
-    }
-    // const fetchPosts = async () => {
-    //   const postsWithUser:
-    // | ((prevState: PostUser[]) => PostUser[])
-    // | {
-    //     idPost: any;
-    //     image: any;
-    //     idUser: any;
-    //     name: any;
-    //     avatar: any;
-    //     likes: number;
-    //     number_of_comments: any;
-    //     description: any;
-    //     tags: any;
-    //     created_at: any;
+    useCallback(() => {
+      console.log('================== FETCH POSTS =======================')
+      if (skipFetch) {
+        console.log("⏭ Skip fetching posts...");
+        return;
+      }
 
-    //     isLiked: any;
-    //     likesCount: any;
-    //   }[] = [];
-    //   try {
-    //     const response = await getAllPost();
-    //     const posts = response.data;
+      const fetchGetAdvices = async (captions: string[]) => {
+        // const captions: string[] = []
+        for (const post of postsWithUser) {
+          captions.push(post.description)
+        }
 
-    //     // console.log("------------------POST-----------------");
-    //     // console.log("FETCH POSTS: ", posts)
 
-    //     //console.log("------------------POST DETAILS-----------------");
-    //     for (const post of posts) {
-    //       // const userResponse = await getOneUserById({ idUser: post.idUser });
-    //       // const user = userResponse.data;
-    //       const cmtResponse = await getAllCommentWithIdPost({ idPost:  post._id});
+        const responseAdvices = await getPostAdvices(captions);
 
-    //       const postUser = {
-    //         idPost: post._id,
-    //         image: post.image,
-    //         likes: post.likes,
-    //         number_of_comments: cmtResponse.data.length,
-    //         description: post.description,
-    //         tags: post.tags,
-    //         // created_at: post.created_at,
-    //         created_at: formatDistanceToNow(new Date(post.created_at), { addSuffix: true }),
-    //         idUser: post.user._id,
-    //         name: post.user.name,
-    //         avatar: post.user.avatar,
-    //         isLiked: false, // thêm
-    //         likesCount: post.likes, // thêm
-    //       }; 
+        console.log('[PostList] = = = response Advices = = =')
+        console.log(responseAdvices.data.questions);
 
-    //       postsWithUser.push(postUser);
-    //     }
-    //     //console.log("✅ Posts with user info:", postsWithUser);
-    //     setPostsUser(postsWithUser);
-    //   } catch (error) {
-    //     console.error("❌ Failed to fetch posts:", error);
-    //   }
-    // };
+        setAdvices(responseAdvices.data.questions);
+        console.log('abc')
+      }
 
-    const fetchPosts = async () => {
-    try {
-      const response = await getAllPost();
-      const posts = response.data;
 
-      const postsWithUser = posts.map((post: { _id: string; image: any; likes: any; number_of_comments: any; description: any; tags: any; created_at: string | number | Date; user: { _id: any; name: any; avatar: any; }; }) => {
-        const oldPost = postsUser.find(p => p.idPost === post._id);
-        return {
-          idPost: post._id,
-          image: post.image,
-          likes: post.likes,
-          number_of_comments: post.number_of_comments,
-          description: post.description,
-          tags: post.tags,
-          created_at: formatDistanceToNow(new Date(post.created_at), { addSuffix: true }),
-          idUser: post.user._id,
-          name: post.user.name,
-          avatar: post.user.avatar,
-          isLiked: oldPost ? oldPost.isLiked : false,  // Giữ lại trạng thái cũ nếu có
-          likesCount: post.likes,
-        };
-      });
+      const fetchPosts = async () => {
+        try {
+          const response = await getAllPost();
+          const posts = response.data;
+          const captions: string[] = [];
 
-      setPostsUser(postsWithUser);
-    } catch (error) {
-      console.error("❌ Failed to fetch posts:", error);
-    }
-  };
 
-    fetchPosts();
-  }, [skipFetch]));
+          const postsWithUser = posts.map((post: { _id: string; image: any; likes: any; number_of_comments: any; description: any; tags: any; created_at: string | number | Date; user: { _id: any; name: any; avatar: any; }; }) => {
+            const oldPost = postsUser.find(p => p.idPost === post._id);
+            return {
+              idPost: post._id,
+              image: post.image,
+              likes: post.likes,
+              number_of_comments: post.number_of_comments,
+              description: post.description,
+              tags: post.tags,
+              created_at: formatDistanceToNow(new Date(post.created_at), { addSuffix: true }),
+              idUser: post.user._id,
+              name: post.user.name,
+              avatar: post.user.avatar,
+              isLiked: oldPost ? oldPost.isLiked : false,  // Giữ lại trạng thái cũ nếu có
+              likesCount: post.likes,
+            };
+          });
 
-  // ===================== HANDLE LIKE ======================
-  // const handleLike = async (postId: string) => {
-  //   setSkipFetch(true); // 👈 chặn refetch ngay sau like
-  //   let updatedPost: { idPost: string; likes: number } | null = null;
+          for (const post of posts) {
+            captions.push(post.description)
+          }
 
-  //   setPostsUser((prevPosts) =>
-  //     prevPosts.map((post) => {
-  //       if (post.idPost === postId) {
-  //         console.log("ID POST: " + post.idPost);
-  //         console.log("LIKES: " + post.likes);
+          fetchGetAdvices(captions)
+          setPostsUser(postsWithUser);
+        } catch (error) {
+          console.error("❌ Failed to fetch posts:", error);
+        }
+      };
 
-  //         const updatedLiked = !post.isLiked;
-  //         const updatedLikesCount = post.likesCount + (updatedLiked ? 1 : -1);
+      fetchPosts();
+    }, [skipFetch]));
 
-  //         console.log("UPDATE LIKES: " + updatedLikesCount);
-  //         // Lưu thông tin để cập nhật sau
-  //         updatedPost = {
-  //           idPost: post.idPost,
-  //           likes: updatedLikesCount,
-  //         };
-  //         return {
-  //           ...post,
-  //           isLiked: updatedLiked,
-  //           likesCount: updatedLikesCount,
-  //         };
-  //       }
-  //       return post;
-  //     })
-  //   );
-  //   console.log("updatedPost after setPostsUser:", updatedPost);
-  //   if (updatedPost) {
-  //     console.log("UPDATED POST---------------------")
-  //     try {
-
-  //       console.log("Sending to APIIIIIIIIIIIIIIIII:", updatedPost);
-  //       await updatePost(updatedPost);
-  //       console.log("Update likescount in Post successfully !")
-  //     } catch (error) {
-  //       console.error("Lỗi khi cập nhật like:", error);
-  //     }
-  //   }
-  //   // Sau vài giây mới cho phép fetch lại
-  //   setTimeout(() => {
-  //     setSkipFetch(false);
-  //   }, 15000); // thời gian tuỳ bạn
-  // };
   const handleLike = async (postId: string) => {
     setSkipFetch(true);
 
@@ -225,7 +143,7 @@ function PostList() {
 
     const updatedLiked = !currentPost.isLiked;
     const updatedLikesCount = currentPost.likesCount + (updatedLiked ? 1 : -1);
-    
+
     const updatedPost = {
       id: postId,
       likes: updatedLikesCount,
@@ -254,103 +172,67 @@ function PostList() {
   };
 
 
-  const [postsUser, setPostsUser] = useState<PostUser[]>([]);
-  const postsWithUser:
-    | ((prevState: PostUser[]) => PostUser[])
-    | {
-      idPost: any;
-      image: any;
-      idUser: any;
-      name: any;
-      avatar: any;
-      likes: number;
-      number_of_comments: any;
-      description: any;
-      tags: any;
-      created_at: any;
 
-      isLiked: any;
-      likesCount: any;
-    }[] = [];
 
   // useEffect(() => {
-  useFocusEffect(
-    useCallback(() => {
-      const fetchPosts = async () => {
-        try {
-          const response = await getAllPost();
-          const posts = response.data;
-          const captions: string[] = [];
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const fetchPosts = async () => {
+  //       try {
+  //         const response = await getAllPost();
+  //         const posts = response.data;
+  //         const captions: string[] = [];
 
-          console.log("------------------POST-----------------");
-          console.log("FETCH POSTS: ", posts)
-          // const postsWithUser = [];
+  //         console.log("------------------POST-----------------");
+  //         console.log("FETCH POSTS: ", posts)
+  //         // const postsWithUser = [];
 
-          if (postsWithUser.length > -1)
-            postsWithUser.slice(postsWithUser.length, 1)
-          console.log("------------------POST DETAILS-----------------");
+  //         if (postsWithUser.length > -1)
+  //           postsWithUser.slice(postsWithUser.length, 1)
+  //         console.log("------------------POST DETAILS-----------------");
 
-          for (const post of posts) {
-            // const userResponse = await getOneUserById({ idUser: post.idUser });
-            // const user = userResponse.data;
-            const cmtResponse = await getAllCommentWithIdPost({ idPost: post._id });
+  //         for (const post of posts) {
+  //           // const userResponse = await getOneUserById({ idUser: post.idUser });
+  //           // const user = userResponse.data;
+  //           const cmtResponse = await getAllCommentWithIdPost({ idPost: post._id });
 
-            let postUser = {
-              idPost: post._id,
-              image: post.image,
-              likes: post.likes,
-              // number_of_comments: post.number_of_comments,
-              number_of_comments: cmtResponse.data.length,
-              description: post.description,
-              tags: post.tags,
-              // created_at: post.created_at,
-              created_at: formatDistanceToNow(new Date(post.created_at), { addSuffix: true }),
+  //           let postUser = {
+  //             idPost: post._id,
+  //             image: post.image,
+  //             likes: post.likes,
+  //             // number_of_comments: post.number_of_comments,
+  //             number_of_comments: cmtResponse.data.length,
+  //             description: post.description,
+  //             tags: post.tags,
+  //             // created_at: post.created_at,
+  //             created_at: formatDistanceToNow(new Date(post.created_at), { addSuffix: true }),
 
-              idUser: post.idUser,
-              name: post.user.name,
-              avatar: post.user.avatar,
-              isLiked: false, // thêm
-              likesCount: post.likes, // thêm,
-            };
+  //             idUser: post.idUser,
+  //             name: post.user.name,
+  //             avatar: post.user.avatar,
+  //             isLiked: false, // thêm
+  //             likesCount: post.likes, // thêm,
+  //           };
 
-            captions.push(post.description)
-            postsWithUser.push(postUser);
-          }
-
-
-
-          fetchGetAdvices(captions)
-          // responseAdvices.data.questions.forEach((element: any, index: any) => {
-          // })
-          console.log(' = = = = = = = = = ')
-          console.log("/////////////////HIIIIIII============");
-          console.log("✅ Posts with user info:", postsWithUser);
-          setPostsUser(postsWithUser);
-        } catch (error) {
-          console.error("❌ Failed to fetch posts:", error);
-        }
-      };
-
-      fetchPosts();
-      // fetchGetAdvices();
-    }, []));
+  //           captions.push(post.description)
+  //           postsWithUser.push(postUser);
+  //         }
 
 
-  const fetchGetAdvices = async (captions: string[]) => {
-    // const captions: string[] = []
-    for (const post of postsWithUser) {
-      captions.push(post.description)
-    }
 
+  //         fetchGetAdvices(captions)
+  //         console.log(' = = = = = = = = = ')
+  //         console.log("/////////////////HIIIIIII============");
+  //         console.log("✅ Posts with user info:", postsWithUser);
+  //         setPostsUser(postsWithUser);
+  //       } catch (error) {
+  //         console.error("❌ Failed to fetch posts:", error);
+  //       }
+  //     };
 
-    const responseAdvices = await getPostAdvices(captions);
-
-    console.log('[PostList] = = = response Advices = = =')
-    console.log(responseAdvices.data.questions);
-
-    setAdvices(responseAdvices.data.questions);
-    console.log('abc')
-  }
+  //     fetchPosts();
+  //     // fetchGetAdvices();
+  //   }, []));
 
   const [numColumns, setNumColumns] = useState(1);
 
@@ -358,7 +240,7 @@ function PostList() {
     <>
       <TouchableOpacity
         style={{ width: 60, height: 60, borderRadius: 10000, padding: 10, backgroundColor: '#FFF2EB', position: "absolute", zIndex: 100, right: 20, bottom: 60 }}
-        onPress={() => {navigation.navigate('ChatBot', {backgroundInfo: '', question: ''})}}
+        onPress={() => { navigation.navigate('ChatBot', { backgroundInfo: '', question: '' }) }}
       >
         <Image style={{ width: 40, height: 40, borderRadius: 100 }} source={AiLogo}></Image>
       </TouchableOpacity>
@@ -369,25 +251,6 @@ function PostList() {
         contentContainerStyle={{ paddingBottom: 40 }}
         renderItem={({ item, index }) => (
           <View style={styles.postContainer}>
-            {/* <Modal
-            animationType="fade"
-            transparent={true}
-            visible={isImageModalVisible}
-            onRequestClose={() => setIsImageModalVisible(false)}
-          >
-            <TouchableOpacity
-              style={styles.modalContainer}
-              activeOpacity={1}
-              onPress={() => setIsImageModalVisible(false)}
-            >
-              <Image
-                source={{ uri: item.image }}
-                style={styles.modalImage}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
-          </Modal> */}
-
             <View style={styles.postHeader}>
               <View style={styles.userInfo}>
                 <Image
@@ -444,9 +307,9 @@ function PostList() {
 
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate("PostListDetails", { item })
+                  // navigation.navigate("PostListDetails", { item })
                   //Use this line if we get any error with above line
-                  //navigation.navigate("PostListDetails", { idPost: item.idPost , idUser: item.idUser, isLike: item.isLiked})
+                  navigation.navigate("PostListDetails", { idPost: item.idPost, idUser: item.idUser, isLike: item.isLiked })
                 }
 
                 style={styles.statButton}
@@ -467,7 +330,7 @@ function PostList() {
                   console.log(element)
                   return (
                     <TouchableOpacity
-                    onPress={() => {navigation.navigate('ChatBot', {backgroundInfo: `this is a post in a social media with these infomation:\n Username: ${item.name}\nPost at time: ${item.created_at}\nCaption (content of post): ${item.description}\nLikes:${item.likes}\ncomments number: ${item.number_of_comments}`, question: element.question})}}
+                      onPress={() => { navigation.navigate('ChatBot', { backgroundInfo: `this is a post in a social media with these infomation:\n Username: ${item.name}\nPost at time: ${item.created_at}\nCaption (content of post): ${item.description}\nLikes:${item.likes}\ncomments number: ${item.number_of_comments}`, question: element.question }) }}
                     >
                       <View
                         style={{ borderRadius: 30, borderWidth: 2, padding: 10, marginRight: 10 }}
@@ -486,7 +349,7 @@ function PostList() {
         keyExtractor={(item) => item.idPost.toString()}
         numColumns={1}
         showsHorizontalScrollIndicator={false}
-        scrollEnabled={false} // ❗ Tắt scroll riêng của FlatList
+        scrollEnabled={true} // ❗ Tắt scroll riêng của FlatList
         nestedScrollEnabled={true} // ✅ Cho phép lồng trong ScrollView
       />
 

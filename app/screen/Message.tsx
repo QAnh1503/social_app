@@ -131,7 +131,7 @@ export default function Message({ route }: MessageProps) {
         {messages.map((message: any, index) => {
           console.log(message)
           return (message.senderId === 'sumary') ?
-            (<View style={MessageStyle.messageDate}>
+            (<View key={index} style={MessageStyle.messageDate}>
               <Text style={MessageStyle.dateDivider}>{"- - Sumary conversation - -"}</Text>
               <Text style={MessageStyle.dateDivider}>{message.content}</Text>
 
@@ -159,7 +159,7 @@ export default function Message({ route }: MessageProps) {
           <TouchableOpacity
             onPress={() => { handleSumaryConversation() }}
           >
-            <Text>🤏</Text>
+            <Text>✨</Text>
           </TouchableOpacity>
         </View>
       </View>
